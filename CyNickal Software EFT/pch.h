@@ -1,5 +1,6 @@
 #pragma once
 #include <print>
+#include <array>
 #include <unordered_map>
 #include <chrono>
 #include <thread>
