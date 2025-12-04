@@ -158,6 +158,7 @@
     <ClCompile Include="DMA\DMA Thread.cpp" />
     <ClCompile Include="DMA\DMA.cpp" />
     <ClCompile Include="DMA\Process.cpp" />
+    <ClCompile Include="Game\Camera\Camera.cpp" />
     <ClCompile Include="Game\Classes\CEFTPlayer.cpp" />
     <ClCompile Include="Game\Classes\CLinkedListEntry.cpp" />
     <ClCompile Include="Game\EFT.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="DMA\DMA Thread.h" />
     <ClInclude Include="DMA\DMA.h" />
     <ClInclude Include="DMA\Process.h" />
+    <ClInclude Include="Game\Camera\Camera.h" />
     <ClInclude Include="Game\Classes\CEFTPlayer.h" />
     <ClInclude Include="Game\Classes\CGameObjectManager.h" />
     <ClInclude Include="Game\Classes\CLinkedListEntry.h" />

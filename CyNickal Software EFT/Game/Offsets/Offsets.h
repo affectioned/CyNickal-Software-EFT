@@ -10,8 +10,16 @@ namespace Offsets
 	//48 8B 0D ? ? ? ? 4C 8D 4C 24 ? 4C 8D 44 24 ? 89 44 24
 	inline constexpr std::ptrdiff_t pGOM{ 0x1A208D8 };
 
+	//4C 8B 05 ? ? ? ? 33 D2 49 8B 48
+	//48 8B 05 ? ? ? ? 48 8B 08 49 8B 3C 0C
+	//48 8B 05 ? ? ? ? 48 8B 38 48 8B 3C 3E
+	//48 8B 05 ? ? ? ? 49 C7 C6 ? ? ? ? 8B 48 ? 85 C9 0F 84 ? ? ? ? 48 89 B4 24
+	//48 8B 05 ? ? ? ? 49 C7 C6 ? ? ? ? 8B 48 ? 85 C9 0F 84 ? ? ? ? 48 89 9C 24
+	inline constexpr std::ptrdiff_t pCameras{ 0x19F0100 };
+
 	namespace CObject
 	{
+		inline constexpr std::ptrdiff_t pComponents{ 0x58 };
 		inline constexpr std::ptrdiff_t pName{ 0x88 };
 	}
 	namespace CGameObjectManager
@@ -19,21 +27,18 @@ namespace Offsets
 		inline constexpr std::ptrdiff_t pActiveNodes{ 0x20 };
 		inline constexpr std::ptrdiff_t pLastActiveNode{ 0x28 };
 	};
-
 	namespace CLocalGameWorld
 	{
 		inline constexpr std::ptrdiff_t pMapName{ 0xC0 };
 		inline constexpr std::ptrdiff_t pRegisteredPlayers{ 0x198 };
 		inline constexpr std::ptrdiff_t pMainPlayer{ 0x1E8 };
 	};
-
 	namespace CRegisteredPlayers
 	{
 		inline constexpr std::ptrdiff_t pPlayerArray{ 0x10 };
 		inline constexpr std::ptrdiff_t NumPlayers{ 0x18 };
 		inline constexpr std::ptrdiff_t MaxPlayers{ 0x1C };
 	}
-
 	namespace CPlayer
 	{
 		inline constexpr std::ptrdiff_t pMovementContext{ 0x60 };
@@ -48,5 +53,22 @@ namespace Offsets
 	namespace CPlayerBody
 	{
 		inline constexpr std::ptrdiff_t pSkeleton{ 0x30 };
+	}
+	namespace CCameras
+	{
+		inline constexpr std::ptrdiff_t pCameraList{ 0x0 };
+		inline constexpr std::ptrdiff_t NumCameras{ 0x10 };
+	}
+	namespace CComponent
+	{
+		inline constexpr std::ptrdiff_t pGameObject{ 0x58 };
+	}
+	namespace CCamera
+	{
+		inline constexpr std::ptrdiff_t pCameraInfo{ 0x18 };
+	}
+	namespace CCameraInfo
+	{
+		inline constexpr std::ptrdiff_t Matrix{ 0x128 };
 	}
 };
