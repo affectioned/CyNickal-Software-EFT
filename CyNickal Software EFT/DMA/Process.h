@@ -25,7 +25,7 @@ private:
 	bool PopulateModules(DMA_Connection* Conn);
 
 public:
-	template<typename T> inline T ReadMem(DMA_Connection* Conn, uintptr_t Address)
+	template<typename T> inline T ReadMem(DMA_Connection* Conn, uintptr_t Address) const
 	{
 		VMMDLL_SCATTER_HANDLE vmsh = VMMDLL_Scatter_Initialize(Conn->GetHandle(), m_PID, VMMDLL_FLAG_NOCACHE);
 		DWORD BytesRead{ 0 };

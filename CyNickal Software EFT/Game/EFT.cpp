@@ -8,50 +8,90 @@
 
 #include "Player List/Player List.h"
 
+#include "Offsets/Offsets.h"
+
+std::vector<uintptr_t> LocalPlayerAddresses{};
+void PopulatePlayers(DMA_Connection* Conn, uintptr_t LocalGameWorld)
+{
+	uintptr_t PlayerListAddress = LocalGameWorld + Offsets::CLocalGameWorld::pRegisteredPlayers;
+
+	auto& Proc = EFT::GetProcess();
+
+	uintptr_t RegisteredPlayersAddress = Proc.ReadMem<uintptr_t>(Conn, PlayerListAddress);
+
+	uintptr_t PlayerDataArrayAddress = Proc.ReadMem<uintptr_t>(Conn, RegisteredPlayersAddress + Offsets::CRegisteredPlayers::pPlayerArray);
+	uintptr_t NumPlayersAddress = RegisteredPlayersAddress + Offsets::CRegisteredPlayers::NumPlayers;
+	uintptr_t MaxPlayersAddress = RegisteredPlayersAddress + Offsets::CRegisteredPlayers::MaxPlayers;
+
+	uint32_t NumPlayers = Proc.ReadMem<uint32_t>(Conn, NumPlayersAddress);
+	uint32_t MaxPlayers = Proc.ReadMem<uint32_t>(Conn, MaxPlayersAddress);
+
+	std::println("[Player List] Player Data: 0x{:X}", PlayerDataArrayAddress);
+	std::println("[Player List] NumPlayers: {}", NumPlayers);
+	std::println("[Player List] MaxPlayers: {}", MaxPlayers);
+
+	if (NumPlayers > 128)
+		throw std::runtime_error("Unreasonable number of players detected.");
+
+	LocalPlayerAddresses.resize(NumPlayers);
+	auto vmsh = VMMDLL_Scatter_Initialize(Conn->GetHandle(), Proc.GetPID(), VMMDLL_FLAG_NOCACHE);
+	VMMDLL_Scatter_PrepareEx(vmsh, PlayerDataArrayAddress + 0x20, sizeof(uintptr_t) * NumPlayers, reinterpret_cast<BYTE*>(LocalPlayerAddresses.data()), nullptr);
+	VMMDLL_Scatter_Execute(vmsh);
+	VMMDLL_Scatter_CloseHandle(vmsh);
+
+	PlayerList::m_PlayerAddr = LocalPlayerAddresses;
+}
+
 bool EFT::Initialize(DMA_Connection* Conn)
 {
 	std::println("Initializing EFT module...");
 
 	Proc.GetProcessInfo(Conn);
 
-	uintptr_t pGOMAddress = Proc.GetUnityAddress() + 0x1A208D8;
+	uintptr_t pGOMAddress = Proc.GetUnityAddress() + Offsets::pGOM;
 	GameObjectManagerAddress = Proc.ReadMem<uintptr_t>(Conn, pGOMAddress);
 	std::println("GameObjectManager Address: 0x{:X}", GameObjectManagerAddress);
 
-	LastActiveNode = Proc.ReadMem<uintptr_t>(Conn, GameObjectManagerAddress + offsetof(CGameObjectManager, pLastActiveNode));
+	LastActiveNode = Proc.ReadMem<uintptr_t>(Conn, GameObjectManagerAddress + Offsets::CGameObjectManager::pLastActiveNode);
 	std::println("LastActiveNode Address: 0x{:X}", LastActiveNode);
 
-	ActiveNodes = Proc.ReadMem<uintptr_t>(Conn, GameObjectManagerAddress + offsetof(CGameObjectManager, pActiveNodes));
+	ActiveNodes = Proc.ReadMem<uintptr_t>(Conn, GameObjectManagerAddress + Offsets::CGameObjectManager::pActiveNodes);
 	std::println("ActiveNodes Address: 0x{:X}", ActiveNodes);
 
 	GetObjectAddresses(Conn);
 
 	PopulateObjectInfoListFromAddresses(Conn);
 
-	DumpAllObjectsToFile("ObjectDump.txt");
+	//DumpAllObjectsToFile("ObjectDump.txt");
 
-	uintptr_t LocalGameWorld = GetLocalGameWorldAddr(Conn);
-
-	auto MainPlayer = Proc.ReadMem<uintptr_t>(Conn, LocalGameWorld + offsetof(CLocalGameWorld, pMainPlayer));
-	std::println("[EFT] MainPlayer Address: 0x{:X}", MainPlayer);
-
-	auto PlayerMovementContext = Proc.ReadMem<uintptr_t>(Conn, MainPlayer + offsetof(CPlayer, pMovementContext));
-	std::println("[EFT] Main PlayerMovementContext Address: 0x{:X}", PlayerMovementContext);
-
-	auto PlayerMovementContextYaw = Proc.ReadMem<float>(Conn, PlayerMovementContext + offsetof(CMovementContext, Yaw));
-	std::println("[EFT] Main Player Yaw: {}", PlayerMovementContextYaw);
-
-	PlayerList::m_PlayerAddr.clear();
-	PlayerList::m_PlayerAddr.push_back(MainPlayer);
-	PlayerList::FullUpdate(Conn);
-	PlayerList::PrintPlayers();
-
-	for (int i = 0; i < 100; i++)
+	try
 	{
-		PlayerList::QuickUpdate(Conn);
-		PlayerList::PrintPlayers();
-		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		uintptr_t LocalGameWorld = GetLocalGameWorldAddr(Conn);
+		PopulatePlayers(Conn, LocalGameWorld);
+
+		auto MainPlayer = Proc.ReadMem<uintptr_t>(Conn, LocalGameWorld + offsetof(CLocalGameWorld, pMainPlayer));
+		std::println("[EFT] MainPlayer Address: 0x{:X}", MainPlayer);
+
+		PlayerList::FullUpdate(Conn);
+
+		for (int i = 0; i < 100; i++)
+		{
+			PlayerList::QuickUpdate(Conn);
+			PlayerList::PrintPlayers();
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		}
 	}
+	catch (const std::exception& e)
+	{
+		std::println("[EFT] Initialize; Exception: {}", e.what());
+		return false;
+	}
+
+	////auto PlayerMovementContext = Proc.ReadMem<uintptr_t>(Conn, MainPlayer + offsetof(CPlayer, pMovementContext));
+	////std::println("[EFT] Main PlayerMovementContext Address: 0x{:X}", PlayerMovementContext);
+
+	////auto PlayerMovementContextYaw = Proc.ReadMem<float>(Conn, PlayerMovementContext + offsetof(CMovementContext, Yaw));
+	////std::println("[EFT] Main Player Yaw: {}", PlayerMovementContextYaw);
 
 	return false;
 }
@@ -72,8 +112,14 @@ void EFT::GetObjectAddresses(DMA_Connection* Conn, uint32_t MaxNodes)
 	uintptr_t FirstNode = ActiveNodes;
 
 	auto vmsh = VMMDLL_Scatter_Initialize(Conn->GetHandle(), Proc.GetPID(), 0);
-	while (CurrentActiveNode != LastActiveNode && CurrentActiveNode && NodeCount <= MaxNodes)
+	while (true)
 	{
+		if (CurrentActiveNode == LastActiveNode && NodeCount > 5)
+			break;
+
+		if (NodeCount >= MaxNodes)
+			break;
+
 		CLinkedListEntry NodeEntry{};
 		VMMDLL_Scatter_PrepareEx(vmsh, CurrentActiveNode, sizeof(CLinkedListEntry), reinterpret_cast<BYTE*>(&NodeEntry), &BytesRead);
 		VMMDLL_Scatter_Execute(vmsh);
@@ -85,11 +131,19 @@ void EFT::GetObjectAddresses(DMA_Connection* Conn, uint32_t MaxNodes)
 			break;
 		}
 
-		//std::println("[EFT] UpdateObjectList; Found Object at 0x{:X}", NodeEntry.pObject);
 		m_ObjectAddresses.push_back(NodeEntry.pObject);
 
 		if (NodeEntry.pNextEntry == FirstNode)
+		{
+			std::println("[EFT] UpdateObjectList; Reached back to first node, ending traversal.");
 			break;
+		}
+
+		if (NodeEntry.pNextEntry == 0)
+		{
+			std::println("[EFT] UpdateObjectList; Next entry is null, ending traversal.");
+			break;
+		}
 
 		CurrentActiveNode = NodeEntry.pNextEntry;
 		NodeCount++;
@@ -116,22 +170,33 @@ std::vector<uintptr_t> EFT::GetGameWorldAddresses(DMA_Connection* Conn)
 	return GameWorldAddresses;
 }
 
+struct MapNameBuff
+{
+	wchar_t MapName[64]{ 0 };
+};
 uintptr_t EFT::GetLocalGameWorldAddr(DMA_Connection* Conn)
 {
 	auto GameWorldAddrs = GetGameWorldAddresses(Conn);
+
+	wchar_t MapNameBuffer[64]{};
+	uintptr_t LocalWorldAddr = 0;
 
 	for (auto& GameWorldAddr : GameWorldAddrs)
 	{
 		auto Deref1 = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddr + 0x58);
 		auto Deref2 = Proc.ReadMem<uintptr_t>(Conn, Deref1 + 0x18);
-		auto LocalWorldAddr = Proc.ReadMem<uintptr_t>(Conn, Deref2 + 0x30);
-		auto MainPlayerAddr = Proc.ReadMem<uintptr_t>(Conn, LocalWorldAddr + offsetof(CLocalGameWorld, pMainPlayer));
-		if (MainPlayerAddr != 0)
-		{
-			std::println("[EFT] LocalGameWorld Address: 0x{:X}", LocalWorldAddr);
-			return LocalWorldAddr;
-		}
+		LocalWorldAddr = Proc.ReadMem<uintptr_t>(Conn, Deref2 + 0x30);
+		auto MainPlayerAddr = Proc.ReadMem<uintptr_t>(Conn, LocalWorldAddr + Offsets::CLocalGameWorld::pMainPlayer);
+		auto MapNameAddr = Proc.ReadMem<uintptr_t>(Conn, LocalWorldAddr + Offsets::CLocalGameWorld::pMapName);
+		MapNameBuff buffer = Proc.ReadMem<MapNameBuff>(Conn, MapNameAddr + 0x14);
+		std::wstring MapNameStr(buffer.MapName);
+		std::string MapNameNarrow(MapNameStr.begin(), MapNameStr.end());
+
+		std::println("[EFT] LocalGameWorld @ Map Name: {}", MapNameNarrow);
+		std::println("[EFT] LocalGameWorld Address: 0x{:X}\n", LocalWorldAddr);
 	}
+
+	return LocalWorldAddr;
 
 	throw std::runtime_error("Failed to find valid LocalGameWorld address.");
 }

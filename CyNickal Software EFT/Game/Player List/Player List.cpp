@@ -81,6 +81,8 @@ void PlayerList::PrintPlayers()
 	for (int i = 0; i < m_Players.size(); i++)
 	{
 		auto& Player = m_Players[i];
+		if (Player.IsInvalid()) continue;
 		std::println("Player #{0:d} @ 0x{1:X} - Base Position: X: {2:f}, Y: {3:f}, Z: {4:f}", i, Player.m_EntityAddress, Player.m_BasePosition.x, Player.m_BasePosition.y, Player.m_BasePosition.z);
 	}
+	std::println("");
 }

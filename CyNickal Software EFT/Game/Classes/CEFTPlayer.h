@@ -19,7 +19,10 @@ public:
 	uint8_t m_Flags{ 0 };
 
 public:
-	CEFTPlayer(uintptr_t EntityAddress) : m_EntityAddress(EntityAddress) {}
+	CEFTPlayer(uintptr_t EntityAddress) : m_EntityAddress(EntityAddress) 
+	{
+		std::println("[CEFTPlayer] Constructed with 0x{:X}", m_EntityAddress);
+	}
 
 	void SetInvalid();
 	bool IsInvalid() const;
