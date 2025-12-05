@@ -172,6 +172,7 @@
     <ClCompile Include="GUI\Fuser\Fuser.cpp" />
     <ClCompile Include="GUI\Main Window\Main Window.cpp" />
     <ClCompile Include="GUI\Player Table\Player Table.cpp" />
+    <ClCompile Include="GUI\Radar\Draw\Player.cpp" />
     <ClCompile Include="GUI\Radar\Radar.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
@@ -209,6 +210,7 @@
     <ClInclude Include="GUI\Fuser\Fuser.h" />
     <ClInclude Include="GUI\Main Window\Main Window.h" />
     <ClInclude Include="GUI\Player Table\Player Table.h" />
+    <ClInclude Include="GUI\Radar\Draw\Player.h" />
     <ClInclude Include="GUI\Radar\Radar.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />

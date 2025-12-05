@@ -96,6 +96,9 @@
     <ClCompile Include="GUI\Color Picker\Color Picker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\Radar\Draw\Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -195,6 +198,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Color Picker\Color Picker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Radar\Draw\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

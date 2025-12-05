@@ -2,7 +2,7 @@
 #include "Game/Classes/Players/CClientPlayer/CClientPlayer.h"
 #include "Game/Classes/Players/CObservedPlayer/CObservedPlayer.h"
 
-class DrawPlayers
+class DrawESPPlayers
 {
 public:
 	static void Draw(const CClientPlayer& Player, const ImVec2& WindowPos, ImDrawList* DrawList);

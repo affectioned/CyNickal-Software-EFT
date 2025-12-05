@@ -13,7 +13,7 @@ void Fuser::Render()
 
 	std::scoped_lock lk(PlayerList::m_PlayerMutex);
 	for (auto& Player : PlayerList::m_Players)
-		std::visit([WindowPos, DrawList](auto Player) {DrawPlayers::Draw(Player, WindowPos, DrawList); }, Player);
+		std::visit([WindowPos, DrawList](auto Player) {DrawESPPlayers::Draw(Player, WindowPos, DrawList); }, Player);
 
 	ImGui::End();
 	ImGui::PopStyleColor();

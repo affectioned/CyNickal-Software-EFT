@@ -4,5 +4,5 @@ namespace Radar
 {
 	void Render();
 
-	inline float fScale{ 0.1f };
+	inline float fScale{ 0.5f };
 }

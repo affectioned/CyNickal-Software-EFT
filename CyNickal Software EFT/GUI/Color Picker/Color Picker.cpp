@@ -10,6 +10,8 @@ void ColorPicker::Render()
 
 	MyColorPicker("Scav Color", m_ScavColor);
 
+	MyColorPicker("Local Player Color", m_LocalPlayerColor);
+
 	ImGui::End();
 }
 

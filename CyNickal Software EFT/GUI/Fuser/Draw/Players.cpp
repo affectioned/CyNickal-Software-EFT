@@ -1,7 +1,8 @@
 #include "pch.h"
-#include "Players.h"
+#include "GUI/Fuser/Draw/Players.h"
 #include "Game/Camera/Camera.h"
 #include "GUI/Color Picker/Color Picker.h"
+#include "Players.h"
 
 void DrawTextAtPosition(ImDrawList* DrawList, const ImVec2& Position, const ImColor& Color, const std::string& Text)
 {
@@ -15,7 +16,7 @@ void DrawTextAtPosition(ImDrawList* DrawList, const ImVec2& Position, const ImCo
 
 static const std::string PlayerLabel = "Player";
 static const std::string ScavLabel = "Scav";
-void DrawPlayers::Draw(const CClientPlayer& Player, const ImVec2& WindowPos, ImDrawList* DrawList)
+void DrawESPPlayers::Draw(const CClientPlayer& Player, const ImVec2& WindowPos, ImDrawList* DrawList)
 {
 	if (Player.IsInvalid())	return;
 
@@ -30,7 +31,7 @@ void DrawPlayers::Draw(const CClientPlayer& Player, const ImVec2& WindowPos, ImD
 		);
 }
 
-void DrawPlayers::Draw(const CObservedPlayer& Player, const ImVec2& WindowPos, ImDrawList* DrawList)
+void DrawESPPlayers::Draw(const CObservedPlayer& Player, const ImVec2& WindowPos, ImDrawList* DrawList)
 {
 	if (Player.IsInvalid())	return;
 
