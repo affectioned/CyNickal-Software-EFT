@@ -12,6 +12,11 @@ void Render(ImGuiContext* ctx)
 {
 	ImGui::SetCurrentContext(ctx);
 
+	if (Fonts::m_IBMPlexMonoSemiBold == nullptr)
+		Fonts::Initialize(ImGui::GetIO());
+
+	ImGui::PushFont(Fonts::m_IBMPlexMonoSemiBold, 16.0f);
+
 	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID, nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
 
 	Radar::Render();
@@ -19,6 +24,8 @@ void Render(ImGuiContext* ctx)
 	Fuser::Render();
 	PlayerTable::Render();
 	ColorPicker::Render();
+
+	ImGui::PopFont();
 }
 
 bool MainWindow::OnFrame()
@@ -149,8 +156,6 @@ bool MainWindow::Initialize()
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
-
-	Fonts::Initialize(io);
 
 	ImGui::StyleColorsDark();
 

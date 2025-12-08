@@ -1,5 +1,6 @@
 <Solution>
   <Configurations>
+    <BuildType Name="DLL" />
     <BuildType Name="Release" />
     <Platform Name="x64" />
   </Configurations>
