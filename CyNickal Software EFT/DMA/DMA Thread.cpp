@@ -2,7 +2,6 @@
 #include "DMA Thread.h"
 #include "Game/EFT.h"
 #include "Game/Player List/Player List.h"
-#include "Game/Loot List/Loot List.h"
 #include "Game/GOM/GOM.h"
 #include "Game/Camera/Camera.h"
 
@@ -19,7 +18,7 @@ void DMA_Thread_Main()
 	auto LocalGameWorldAddr = GOM::GetLocalGameWorldAddr(Conn);
 
 	CTimer Player_Quick(std::chrono::milliseconds(25), [&Conn]() { PlayerList::QuickUpdate(Conn); });
-	CTimer Player_Allocations(std::chrono::seconds(5), [&Conn, LocalGameWorldAddr]() {
+	CTimer Player_Allocations(std::chrono::seconds(5), [&Conn, &LocalGameWorldAddr]() {
 		PlayerList::UpdateBaseAddresses(Conn, LocalGameWorldAddr);
 		PlayerList::HandlePlayerAllocations(Conn);
 		});
@@ -31,6 +30,7 @@ void DMA_Thread_Main()
 		Player_Quick.Tick(TimeNow);
 		Player_Allocations.Tick(TimeNow);
 		Camera_UpdateViewMatrix.Tick(TimeNow);
+		if (GetAsyncKeyState(VK_INSERT) & 0x1) PlayerList::FullUpdate(Conn, LocalGameWorldAddr);
 	}
 
 	Conn->EndConnection();

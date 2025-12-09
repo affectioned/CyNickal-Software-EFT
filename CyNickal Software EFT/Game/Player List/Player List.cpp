@@ -126,8 +126,24 @@ void PlayerList::QuickUpdate(DMA_Connection* Conn)
 		std::visit([](auto& p) { p.QuickFinalize(); }, Player);
 }
 
+void PlayerList::FullUpdate(DMA_Connection* Conn, uintptr_t LocalGameWorld)
+{
+	std::println("[PlayerList] Full update requested.");
+
+	std::scoped_lock Lock(m_PlayerMutex);
+	ExecuteReadsOnPlayerVec(Conn, m_Players);
+}
+
 void PlayerList::UpdateBaseAddresses(DMA_Connection* Conn, uintptr_t LocalGameWorld)
 {
+	if (!LocalGameWorld)
+	{
+		m_RegisteredPlayersBaseAddress = 0x0;
+		m_PlayerDataBaseAddress = 0x0;
+		m_NumPlayers = 0;
+		return;
+	}
+
 	uintptr_t PlayerListAddress = LocalGameWorld + Offsets::CLocalGameWorld::pRegisteredPlayers;
 
 	auto& Proc = EFT::GetProcess();
@@ -158,6 +174,11 @@ std::vector<NameInfo> ObjectNames{};
 std::unordered_map<uintptr_t, std::string> NameMap{};
 void PlayerList::GetPlayerAddresses(DMA_Connection* Conn, std::vector<uintptr_t>& OutClientPlayers, std::vector<uintptr_t>& OutObservedPlayers)
 {
+	OutClientPlayers.clear();
+	OutObservedPlayers.clear();
+
+	if (!m_NumPlayers || !m_PlayerDataBaseAddress) return;
+
 	auto& Proc = EFT::GetProcess();
 
 	PlayerInfos.clear();
@@ -214,6 +235,7 @@ void PlayerList::GetPlayerAddresses(DMA_Connection* Conn, std::vector<uintptr_t>
 		{
 			auto& ObjName = ObjectNames[i];
 			auto& ObjAddress = UniqueObjectAddresses[i];
+
 			std::println("Object {0:X} is type '{1:s}'", ObjAddress, ObjName.Name);
 			NameMap[ObjAddress] = std::string(ObjName.Name);
 		}
@@ -221,12 +243,11 @@ void PlayerList::GetPlayerAddresses(DMA_Connection* Conn, std::vector<uintptr_t>
 
 	VMMDLL_Scatter_CloseHandle(vmsh);
 
-	OutClientPlayers.clear();
-	OutObservedPlayers.clear();
-
 	for (int i = 0; i < PlayerInfos.size(); i++)
 	{
 		auto& PlayerInfo = PlayerInfos[i];
+
+		if (PlayerInfo.ObjectAddress == 0) continue;
 
 		if (NameMap[PlayerInfo.ObjectAddress] == "LocalPlayer" || NameMap[PlayerInfo.ObjectAddress] == "ClientPlayer")
 			OutClientPlayers.push_back(PlayerInfo.PlayerAddress);
@@ -239,10 +260,22 @@ Vector3 PlayerList::GetLocalPlayerPosition()
 {
 	std::scoped_lock Lock(m_PlayerMutex);
 
-	if (m_Players.empty())
-		return Vector3();
+	Vector3 ReturnPosition{};
+	bool bFound{ false };
 
-	return std::get<CClientPlayer>(m_Players[0]).GetBonePosition(EBoneIndex::Root);
+	for (auto& Player : m_Players)
+	{
+		std::visit([&](auto& p) {
+			if (p.IsLocalPlayer()) {
+				bFound = true;
+				ReturnPosition = p.GetBonePosition(EBoneIndex::Root);
+			}
+			}, Player);
+
+		if (bFound) break;
+	}
+
+	return ReturnPosition;
 }
 
 void PlayerList::AllocatePlayersFromVector(DMA_Connection* Conn, std::vector<uintptr_t> PlayerAddresses, EPlayerType playerType)

@@ -18,8 +18,8 @@ void Radar::Render()
 
 	DrawList->AddRectFilled(RectTopLeft, RectBottomRight, IM_COL32(55, 55, 55, 255));
 
-	DrawRadarPlayers::DrawAll(WindowPos, WindowSize, DrawList);
 	DrawRadarLoot::DrawAll(WindowPos, WindowSize, DrawList);
+	DrawRadarPlayers::DrawAll(WindowPos, WindowSize, DrawList);
 
 	ImGui::End();
 }

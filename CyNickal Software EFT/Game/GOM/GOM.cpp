@@ -112,6 +112,7 @@ uintptr_t GOM::GetLocalGameWorldAddr(DMA_Connection* Conn)
 
 		if (MainPlayerAddr)
 		{
+			m_MainPlayerAddress = MainPlayerAddr;
 			std::println("[EFT] LocalGameWorld Address: 0x{:X}\n", LocalWorldAddr);
 			return LocalWorldAddr;
 		}

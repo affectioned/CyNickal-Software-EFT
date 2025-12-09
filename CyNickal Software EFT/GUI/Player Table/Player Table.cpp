@@ -9,7 +9,7 @@ void PlayerTable::Render()
 
 	ImGui::Begin("Player Table", &bMasterToggle);
 
-	if (ImGui::BeginTable("##Players", 6))
+	if (ImGui::BeginTable("##Players", 7))
 	{
 		ImGui::TableSetupColumn("Address");
 		ImGui::TableSetupColumn("Position");
@@ -17,6 +17,7 @@ void PlayerTable::Render()
 		ImGui::TableSetupColumn("Side");
 		ImGui::TableSetupColumn("Spawn Type");
 		ImGui::TableSetupColumn("Voice");
+		ImGui::TableSetupColumn("Local Player?");
 		ImGui::TableHeadersRow();
 
 		std::scoped_lock Lock(PlayerList::m_PlayerMutex);
@@ -47,6 +48,8 @@ void PlayerTable::AddRow(const CClientPlayer& Player)
 	ImGui::Text("%d", Player.m_SpawnType);
 	ImGui::TableNextColumn();
 	ImGui::Text("N/A");
+	ImGui::TableNextColumn();
+	ImGui::Text("%d", (Player.IsLocalPlayer()) ? 1 : 0);
 }
 
 void PlayerTable::AddRow(const CObservedPlayer& Player)
@@ -67,4 +70,6 @@ void PlayerTable::AddRow(const CObservedPlayer& Player)
 	ImGui::Text("%d", Player.m_SpawnType);
 	ImGui::TableNextColumn();
 	ImGui::Text("%s", Player.m_Voice);
+	ImGui::TableNextColumn();
+	ImGui::Text("N/A");
 }

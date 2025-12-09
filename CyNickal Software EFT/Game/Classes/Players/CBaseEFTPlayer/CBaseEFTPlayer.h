@@ -52,6 +52,8 @@ public:
 	const bool IsBoss() const;
 	const bool IsInvalid() const;
 	const Vector3& GetBonePosition(EBoneIndex boneIndex) const;
+	const bool IsLocalPlayer() const;
+	void SetLocalPlayer();
 
 private:
 	const std::string& GetBossName() const;

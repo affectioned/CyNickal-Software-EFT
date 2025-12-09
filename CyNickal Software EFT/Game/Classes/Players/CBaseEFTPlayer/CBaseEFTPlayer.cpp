@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "CBaseEFTPlayer.h"
 #include "Game/Offsets/Offsets.h"
-#include "Game/Classes/CUnityTransform/CUnityTransform.h"
+#include "Game/GOM/GOM.h"
 
 void CBaseEFTPlayer::PrepareRead_1(VMMDLL_SCATTER_HANDLE vmsh, EPlayerType playerType)
 {
@@ -106,6 +106,9 @@ void CBaseEFTPlayer::Finalize()
 {
 	if (IsInvalid())
 		return;
+
+	if (m_EntityAddress == GOM::GetMainPlayerAddress())
+		SetLocalPlayer();
 
 	m_pSkeleton->Finalize();
 }
@@ -213,4 +216,14 @@ const Vector3& CBaseEFTPlayer::GetBonePosition(EBoneIndex boneIndex) const
 		return invalidPosition;
 
 	return m_pSkeleton->GetBonePosition(boneIndex);
+}
+
+const bool CBaseEFTPlayer::IsLocalPlayer() const
+{
+	return m_Flags & 0x2;
+}
+
+void CBaseEFTPlayer::SetLocalPlayer()
+{
+	m_Flags |= 0x2;
 }

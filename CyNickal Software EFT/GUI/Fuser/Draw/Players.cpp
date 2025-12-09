@@ -6,20 +6,14 @@
 
 void DrawESPPlayers::DrawAll(const ImVec2& WindowPos, ImDrawList* DrawList)
 {
+	m_LatestLocalPlayerPos = PlayerList::GetLocalPlayerPosition();
+
 	std::scoped_lock lk(PlayerList::m_PlayerMutex);
 
 	if (PlayerList::m_Players.empty()) return;
 
-	auto& LocalPlayer = std::get<CClientPlayer>(PlayerList::m_Players[0]);
-	if (LocalPlayer.IsInvalid()) return;
-
-	m_LatestLocalPlayerPos = LocalPlayer.GetBonePosition(EBoneIndex::Root);
-
-	for (int i = 1; i < PlayerList::m_Players.size(); i++)
-	{
-		auto& Player = PlayerList::m_Players[i];
+	for (auto& Player : PlayerList::m_Players)
 		std::visit([WindowPos, DrawList](auto& Player) { DrawESPPlayers::Draw(Player, WindowPos, DrawList); }, Player);
-	}
 }
 
 void DrawTextAtPosition(ImDrawList* DrawList, const ImVec2& Position, const ImColor& Color, const std::string& Text)
@@ -36,6 +30,8 @@ std::array<Vector2, SKELETON_NUMBONES> ProjectedBones{};
 void DrawESPPlayers::Draw(const CBaseEFTPlayer& Player, const ImVec2& WindowPos, ImDrawList* DrawList)
 {
 	if (Player.IsInvalid())	return;
+
+	if (Player.IsLocalPlayer())	return;
 
 	if (Player.m_pSkeleton == nullptr) return;
 

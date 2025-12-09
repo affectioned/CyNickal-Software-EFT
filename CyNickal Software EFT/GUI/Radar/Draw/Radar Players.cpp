@@ -6,26 +6,20 @@
 
 void DrawRadarPlayers::DrawAll(const ImVec2& WindowPos, const ImVec2& WindowSize, ImDrawList* DrawList)
 {
+	auto LocalPos = PlayerList::GetLocalPlayerPosition();
+
 	std::scoped_lock lk(PlayerList::m_PlayerMutex);
 
 	if (PlayerList::m_Players.empty())
 		return;
 
 	auto CenterScreen = ImVec2(WindowPos.x + (WindowSize.x / 2), WindowPos.y + (WindowSize.y / 2));
-	auto& LocalPlayer = std::get<CClientPlayer>(PlayerList::m_Players[0]);
 
-	if (LocalPlayer.IsInvalid())
-		return;
-
-	auto LocalPos = LocalPlayer.GetBonePosition(EBoneIndex::Root);
-
-	DrawLocalPlayer(LocalPlayer, CenterScreen, DrawList);
-
-	for (int i = 1; i < PlayerList::m_Players.size(); i++)
+	for (auto& Player : PlayerList::m_Players)
 	{
-		auto& Player = PlayerList::m_Players[i];
-
-		std::visit([CenterScreen, DrawList, LocalPos](auto& Player) { Draw(Player, CenterScreen, LocalPos, DrawList);  }, Player);
+		std::visit([CenterScreen, DrawList, LocalPos](auto& Player) {
+			Draw(Player, CenterScreen, LocalPos, DrawList);
+			}, Player);
 	}
 }
 
@@ -33,6 +27,12 @@ void DrawRadarPlayers::Draw(const CClientPlayer& Player, const ImVec2& CenterScr
 {
 	if (Player.IsInvalid())
 		return;
+
+	if (Player.IsLocalPlayer())
+	{
+		DrawLocalPlayer(Player, CenterScreen, DrawList);
+		return;
+	}
 
 	auto& PlayerPos = Player.GetBonePosition(EBoneIndex::Root);
 	auto Delta3D = PlayerPos - LocalPos;
