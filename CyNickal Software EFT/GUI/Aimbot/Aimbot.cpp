@@ -2,8 +2,9 @@
 #include "Aimbot.h"
 #include "DMA/Input Manager.h"
 #include "Game/Player List/Player List.h"
-#include "Game/Camera/Camera.h"	
-#include "GUI/Fuser/Fuser.h"	
+#include "Game/Camera/Camera.h"
+#include "GUI/Fuser/Fuser.h"
+#include "GUI/Keybinds/Keybinds.h"	
 
 void Aimbot::RenderSettings()
 {
@@ -23,7 +24,10 @@ void Aimbot::RenderSettings()
 	ImGui::SliderFloat("Dampen", &fDampen, 0.01f, 1.0f);
 	ImGui::SliderFloat("FOV", &fPixelFOV, 1.0f, 300.0f);
 	ImGui::SliderFloat("Deadzone FOV", &fDeadzoneFov, 1.0f, 10.0f);
-	ImGui::InputScalar("Keybind", ImGuiDataType_U32, &m_Keybind);
+	ImGui::Text("Keybind: %s", CKeybind::VKCodeToString(m_Keybind));
+	ImGui::SameLine();
+	ImGui::SetNextItemWidth(50.0f);
+	ImGui::InputScalar("##AimbotKey", ImGuiDataType_U32, &m_Keybind);
 
 	ImGui::End();
 }

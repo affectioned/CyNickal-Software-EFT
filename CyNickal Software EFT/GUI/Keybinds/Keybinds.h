@@ -8,10 +8,12 @@ public:
 	uint32_t m_Key{ 0 };
 	bool m_bTargetPC{ false };
 	bool m_bRadarPC{ false };
+	bool m_bWaitingForKey{ false };
 
 public:
 	void Render();
 	const bool IsActive(DMA_Connection* Conn);
+	static const char* VKCodeToString(uint32_t vkCode);
 };
 
 class Keybinds
