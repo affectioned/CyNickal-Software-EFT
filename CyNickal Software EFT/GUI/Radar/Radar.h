@@ -14,4 +14,5 @@ public:
 	static inline float fScale{ 0.5f };
 	static inline float fLocalViewRayLength{ 100.0f };
 	static inline float fOtherViewRayLength{ 33.0f };
+	static inline float fEntityRadius{ 4.0f };
 };

@@ -18,9 +18,14 @@ void DMA_Thread_Main()
 
 	c_keys::InitKeyboard(Conn);
 
-	EFT::Initialize(Conn);
+	if (!EFT::Initialize(Conn))
+	{
+		std::println("[DMA Thread] EFT Initialization failed, requesting exit.");
+		bRunning = false;
+		return;
+	}
 
-	auto LocalGameWorldAddr = GOM::GetLocalGameWorldAddr(Conn);
+	auto LocalGameWorldAddr = EFT::GetCachedWorldAddress();
 
 	CTimer Player_Quick(std::chrono::milliseconds(25), [&Conn]() { PlayerList::QuickUpdate(Conn); });
 	CTimer Player_Allocations(std::chrono::seconds(5), [&Conn, &LocalGameWorldAddr]() {

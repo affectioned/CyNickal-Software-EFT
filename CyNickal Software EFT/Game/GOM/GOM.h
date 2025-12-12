@@ -6,7 +6,7 @@ class GOM
 {
 public:
 	static bool Initialize(DMA_Connection* Conn);
-	static uintptr_t GetLocalGameWorldAddr(DMA_Connection* Conn);
+	static uintptr_t FindGameWorldAddressFromCache(DMA_Connection* Conn);
 	static const uintptr_t& GetMainPlayerAddress() { return m_MainPlayerAddress; }
 private:
 	static inline uintptr_t GameObjectManagerAddress{ 0 };

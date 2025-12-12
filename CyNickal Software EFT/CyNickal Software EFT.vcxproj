@@ -235,6 +235,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Database\Database.cpp" />
+    <ClCompile Include="Game\Classes\CExfilPoint\CExfilPoint.cpp" />
     <ClCompile Include="Game\Classes\CItemHash\CItemHash.cpp" />
     <ClCompile Include="DMA\DMA Thread.cpp" />
     <ClCompile Include="DMA\DMA.cpp" />
@@ -252,11 +253,13 @@
     <ClCompile Include="Game\Classes\Players\CClientPlayer\CClientPlayer.cpp" />
     <ClCompile Include="Game\Classes\Players\CObservedPlayer\CObservedPlayer.cpp" />
     <ClCompile Include="Game\EFT.cpp" />
+    <ClCompile Include="Game\Exfil List\Exfil List.cpp" />
     <ClCompile Include="Game\GOM\GOM.cpp" />
     <ClCompile Include="Game\Loot List\Loot List.cpp" />
     <ClCompile Include="Game\Player List\Player List.cpp" />
     <ClCompile Include="GUI\Aimbot\Aimbot.cpp" />
     <ClCompile Include="GUI\Color Picker\Color Picker.cpp" />
+    <ClCompile Include="GUI\Fuser\Draw\Exfils.cpp" />
     <ClCompile Include="GUI\Keybinds\Keybinds.cpp" />
     <ClCompile Include="GUI\Main Menu\Main Menu.cpp" />
     <ClCompile Include="GUI\Fonts\Fonts.cpp" />
@@ -266,6 +269,7 @@
     <ClCompile Include="GUI\Loot Table\Loot Table.cpp" />
     <ClCompile Include="GUI\Main Window\Main Window.cpp" />
     <ClCompile Include="GUI\Player Table\Player Table.cpp" />
+    <ClCompile Include="GUI\Radar\Draw\Radar Exfils.cpp" />
     <ClCompile Include="GUI\Radar\Draw\Radar Players.cpp" />
     <ClCompile Include="GUI\Radar\Draw\RadarLoot.cpp" />
     <ClCompile Include="GUI\Radar\Radar.cpp" />
@@ -285,6 +289,7 @@
     <ClInclude Include="..\Dependencies\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\Dependencies\ImGui\imstb_truetype.h" />
     <ClInclude Include="Database\Database.h" />
+    <ClInclude Include="Game\Classes\CExfilPoint\CExfilPoint.h" />
     <ClInclude Include="Game\Classes\CItemHash\CItemHash.h" />
     <ClInclude Include="DMA\DMA Thread.h" />
     <ClInclude Include="DMA\DMA.h" />
@@ -308,9 +313,11 @@
     <ClInclude Include="Game\Classes\Vector.h" />
     <ClInclude Include="Game\EFT.h" />
     <ClInclude Include="Game\Enums\EBoneIndex.h" />
+    <ClInclude Include="Game\Enums\EExfilStatus.h" />
     <ClInclude Include="Game\Enums\EPlayerSide.h" />
     <ClInclude Include="Game\Enums\EPlayerType.h" />
     <ClInclude Include="Game\Enums\ESpawnType.h" />
+    <ClInclude Include="Game\Exfil List\Exfil List.h" />
     <ClInclude Include="Game\GOM\GOM.h" />
     <ClInclude Include="Game\Loot List\Loot List.h" />
     <ClInclude Include="Game\Offsets\Offsets.h" />
@@ -319,6 +326,7 @@
     <ClInclude Include="GUI\Color Picker\Color Picker.h" />
     <ClInclude Include="GUI\Fonts\Data\IBMPlexMono.h" />
     <ClInclude Include="GUI\Fonts\Fonts.h" />
+    <ClInclude Include="GUI\Fuser\Draw\Exfils.h" />
     <ClInclude Include="GUI\Fuser\Draw\Loot.h" />
     <ClInclude Include="GUI\Fuser\Draw\Players.h" />
     <ClInclude Include="GUI\Fuser\Fuser.h" />
@@ -327,6 +335,7 @@
     <ClInclude Include="GUI\Main Menu\Main Menu.h" />
     <ClInclude Include="GUI\Main Window\Main Window.h" />
     <ClInclude Include="GUI\Player Table\Player Table.h" />
+    <ClInclude Include="GUI\Radar\Draw\Radar Exfils.h" />
     <ClInclude Include="GUI\Radar\Draw\Radar Players.h" />
     <ClInclude Include="GUI\Radar\Draw\Radar Loot.h" />
     <ClInclude Include="GUI\Radar\Radar.h" />

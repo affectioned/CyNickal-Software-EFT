@@ -17,4 +17,5 @@ public:
 	static inline ImColor m_BossColor{ ImColor(225,0,225) };
 	static inline ImColor m_LootColor{ ImColor(0,150,150) };
 	static inline ImColor m_ValuableLootColor{ ImColor(0,252,198) };
+	static inline ImColor m_ExfilColor{ ImColor(25,225,25) };
 };

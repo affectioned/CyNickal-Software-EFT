@@ -43,7 +43,7 @@ void DrawRadarPlayers::Draw(const CClientPlayer& Player, const ImVec2& CenterScr
 	auto Color = Player.GetSideColor();
 
 	ImVec2 DotPosition = ImVec2(CenterScreen.x + Delta3D.z, CenterScreen.y + Delta3D.x);
-	DrawList->AddCircleFilled(DotPosition, 5, Color);
+	DrawList->AddCircleFilled(DotPosition, Radar::fEntityRadius, Color);
 
 	if (Radar::bOtherPlayerViewRays)
 		DrawCharacterViewRay(Player, DotPosition, DrawList, Color);
@@ -63,7 +63,7 @@ void DrawRadarPlayers::Draw(const CObservedPlayer& Player, const ImVec2& CenterS
 	auto Color = Player.GetSideColor();
 
 	ImVec2 DotPosition = ImVec2(CenterScreen.x + Delta3D.z, CenterScreen.y + Delta3D.x);
-	DrawList->AddCircleFilled(DotPosition, 5, Color);
+	DrawList->AddCircleFilled(DotPosition, Radar::fEntityRadius, Color);
 
 	if (Radar::bOtherPlayerViewRays)
 		DrawCharacterViewRay(Player, DotPosition, DrawList, Color);

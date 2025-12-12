@@ -26,11 +26,35 @@ namespace Offsets
 	/* namespace: EFT, class: GameWorld : UnityEngine::MonoBehaviour */
 	namespace CLocalGameWorld
 	{
+		inline constexpr std::ptrdiff_t pExfiltrationController{ 0x48 };
 		inline constexpr std::ptrdiff_t pMapName{ 0xC0 };
 		inline constexpr std::ptrdiff_t pRegisteredPlayers{ 0x198 };
 		inline constexpr std::ptrdiff_t pMainPlayer{ 0x1E8 };
 		inline constexpr std::ptrdiff_t pLootList{ 0x180 };
 	};
+
+	namespace CExfiltrationController
+	{
+		inline constexpr std::ptrdiff_t pExfiltrationPoints{ 0x20 };
+	};
+
+	namespace CGenericList
+	{
+		inline constexpr std::ptrdiff_t Num{ 0x18 };
+		inline constexpr std::ptrdiff_t StartData{ 0x20 };
+	}
+
+	namespace CExfiltrationPoint
+	{
+		inline constexpr std::ptrdiff_t pUnknown{ 0x10 };
+		inline constexpr std::ptrdiff_t ExfilStatus{ 0x58 };
+	}
+
+	namespace CComponents
+	{
+		inline constexpr std::ptrdiff_t pTransform{ 0x8 };
+	}
+
 	namespace CRegisteredPlayers
 	{
 		inline constexpr std::ptrdiff_t pPlayerArray{ 0x10 };
@@ -174,7 +198,7 @@ namespace Offsets
 	namespace CHandsController
 	{
 		inline constexpr std::ptrdiff_t pItem{ 0x70 };
-	}	
+	}
 	/* namespace: EFT.NextObservedPlayer, class: ObservedPlayerHandsController : System::Object */
 	namespace CObservedPlayerHands
 	{

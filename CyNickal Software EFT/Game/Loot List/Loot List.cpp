@@ -4,8 +4,9 @@
 #include "Game/EFT.h"
 
 std::vector<uintptr_t> m_UnsortedLootAddresses{};
-void LootList::CompleteUpdate(DMA_Connection* Conn, uintptr_t LocalGameWorld)
+void LootList::CompleteUpdate(DMA_Connection* Conn)
 {
+	auto LocalGameWorld = EFT::GetCachedWorldAddress();
 	auto& Proc = EFT::GetProcess();
 
 	m_pLootListAddress = Proc.ReadMem<uintptr_t>(Conn, LocalGameWorld + Offsets::CLocalGameWorld::pLootList);

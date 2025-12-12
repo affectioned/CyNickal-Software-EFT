@@ -97,7 +97,7 @@ std::vector<uintptr_t> GOM::GetGameWorldAddresses(DMA_Connection* Conn)
 	return GameWorldAddresses;
 }
 
-uintptr_t GOM::GetLocalGameWorldAddr(DMA_Connection* Conn)
+uintptr_t GOM::FindGameWorldAddressFromCache(DMA_Connection* Conn)
 {
 	auto GameWorldAddrs = GetGameWorldAddresses(Conn);
 

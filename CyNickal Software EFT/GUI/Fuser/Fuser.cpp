@@ -2,6 +2,7 @@
 #include "Fuser.h"
 #include "Draw/Players.h"
 #include "Draw/Loot.h"
+#include "Draw/Exfils.h"
 #include "GUI/Aimbot/Aimbot.h"
 
 void Fuser::Render()
@@ -16,6 +17,7 @@ void Fuser::Render()
 
 	DrawESPPlayers::DrawAll(WindowPos, DrawList);
 	DrawESPLoot::DrawAll(WindowPos, DrawList);
+	DrawExfils::DrawAll(WindowPos, DrawList);
 	Aimbot::RenderFOVCircle(WindowPos, DrawList);
 
 	ImGui::End();

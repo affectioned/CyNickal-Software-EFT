@@ -42,4 +42,22 @@ public:
 
 		return Buffer;
 	}
+	template<typename T> inline std::vector<T> ReadVec(DMA_Connection* Conn, uintptr_t Address, size_t Num) const
+	{
+		VMMDLL_SCATTER_HANDLE vmsh = VMMDLL_Scatter_Initialize(Conn->GetHandle(), m_PID, VMMDLL_FLAG_NOCACHE);
+		DWORD BytesRead{ 0 };
+
+		std::vector<T> Buffer(Num);
+
+		VMMDLL_Scatter_PrepareEx(vmsh, Address, sizeof(T) * Num, reinterpret_cast<BYTE*>(Buffer.data()), &BytesRead);
+
+		VMMDLL_Scatter_Execute(vmsh);
+
+		VMMDLL_Scatter_CloseHandle(vmsh);
+
+		if (BytesRead != sizeof(T) * Num)
+			std::println("Incomplete read: {}/{}", BytesRead, sizeof(T));
+
+		return Buffer;
+	}
 };
