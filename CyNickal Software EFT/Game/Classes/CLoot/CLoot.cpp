@@ -61,7 +61,7 @@ void CLoot::PrepareRead_5(VMMDLL_SCATTER_HANDLE vmsh)
 	if (m_BytesRead != m_Name.size())
 		SetInvalid();
 
-	m_ItemHash = CItemHash(std::string(m_Name.data()));
+	m_ItemHash = CNameHash(std::string(m_Name.data()));
 
 	if (!m_TransformAddress)
 		SetInvalid();

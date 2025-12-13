@@ -37,6 +37,40 @@ void PlayerTable::Render()
 	ImGui::End();
 }
 
+void HandRows(const CBaseEFTPlayer& Player)
+{
+	auto& pHands = Player.m_pHands;
+	if (pHands && pHands->IsInvalid() == false)
+	{
+		ImGui::TableNextColumn();
+		ImGui::Text(pHands->m_pHeldItem->GetUnfilteredName());
+
+		ImGui::TableNextColumn();
+		ImGui::Text(pHands->m_pHeldItem->GetSanitizedName());
+
+		ImGui::TableNextColumn();
+		std::string JOAAT = "JOAAT##" + std::to_string(Player.m_EntityAddress);
+		if (ImGui::Button(JOAAT.c_str()) && pHands) ImGui::SetClipboardText(std::format("0x{0:X}", pHands->m_pHeldItem->m_pItemTemplate->m_pNameHash->GetHash()).c_str());
+
+		ImGui::TableNextColumn();
+		if (pHands->m_pMagazine && pHands->m_pMagazine->IsInvalid() == false)
+			ImGui::Text("%d/%d, %s", pHands->m_pMagazine->m_CurrentCartridges, pHands->m_pMagazine->m_MaxCartridges, pHands->m_pMagazine->m_pAmmoItemTemplate->m_sName.c_str());
+		else
+			ImGui::Text("N/A");
+	}
+	else
+	{
+		ImGui::TableNextColumn();
+		ImGui::Text("N/A");
+		ImGui::TableNextColumn();
+		ImGui::Text("N/A");
+		ImGui::TableNextColumn();
+		ImGui::Text("N/A");
+		ImGui::TableNextColumn();
+		ImGui::Text("N/A");
+	}
+};
+
 void PlayerTable::AddRow(const CClientPlayer& Player)
 {
 	if (Player.IsInvalid())
@@ -63,18 +97,7 @@ void PlayerTable::AddRow(const CClientPlayer& Player)
 	ImGui::Text("%d", (Player.IsLocalPlayer()) ? 1 : 0);
 	ImGui::TableNextColumn();
 	ImGui::Text("N/A");
-	ImGui::TableNextColumn();
-	ImGui::Text((Player.m_pHands) ? Player.m_pHands->m_HeldItem.GetUnfilteredName() : "N/A");
-	ImGui::TableNextColumn();
-	ImGui::Text((Player.m_pHands && Player.m_pHands->m_HeldItem.GetSanitizedName()) ? Player.m_pHands->m_HeldItem.GetSanitizedName() : "N/A");
-	ImGui::TableNextColumn();
-	std::string JOAAT = "JOAAT##" + std::to_string(Player.m_EntityAddress);
-	if (ImGui::Button(JOAAT.c_str())) ImGui::SetClipboardText(std::format("0x{0:X}", Player.m_pHands->m_HeldItem.m_ItemHash.GetHash()).c_str());
-	ImGui::TableNextColumn();
-	if(Player.m_pHands && Player.m_pHands->m_pMagazine)
-		ImGui::Text("%d/%d", Player.m_pHands->m_pMagazine->m_CurrentCartridges, Player.m_pHands->m_pMagazine->m_MaxCartridges);
-	else
-		ImGui::Text("N/A");
+	HandRows(Player);
 }
 
 void PlayerTable::AddRow(const CObservedPlayer& Player)
@@ -103,16 +126,5 @@ void PlayerTable::AddRow(const CObservedPlayer& Player)
 	ImGui::Text("N/A");
 	ImGui::TableNextColumn();
 	ImGui::Text("%X", Player.m_TagStatus);
-	ImGui::TableNextColumn();
-	ImGui::Text((Player.m_pHands) ? Player.m_pHands->m_HeldItem.GetUnfilteredName() : "N/A");
-	ImGui::TableNextColumn();
-	ImGui::Text((Player.m_pHands) ? Player.m_pHands->m_HeldItem.GetSanitizedName() : "N/A");
-	ImGui::TableNextColumn();
-	std::string JOAAT = "JOAAT##" + std::to_string(Player.m_EntityAddress);
-	if (ImGui::Button(JOAAT.c_str())) ImGui::SetClipboardText(std::format("0x{0:X}", Player.m_pHands->m_HeldItem.m_ItemHash.GetHash()).c_str());
-	ImGui::TableNextColumn();
-	if (Player.m_pHands && Player.m_pHands->m_pMagazine)
-		ImGui::Text("%d/%d", Player.m_pHands->m_pMagazine->m_CurrentCartridges, Player.m_pHands->m_pMagazine->m_MaxCartridges);
-	else
-		ImGui::Text("N/A");
+	HandRows(Player);
 }

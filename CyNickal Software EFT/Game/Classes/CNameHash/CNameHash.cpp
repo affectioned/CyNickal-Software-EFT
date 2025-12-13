@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "CItemHash.h"
+#include "CNameHash.h"
 
 const std::unordered_map<uint32_t, std::string> gItemNames
 {
@@ -157,7 +157,7 @@ uint32_t JOAAT(const std::string& String) {
 	return hash;
 }
 
-CItemHash::CItemHash(const std::string& ItemName)
+CNameHash::CNameHash(const std::string& ItemName)
 {
 	m_Hash = JOAAT(ItemName);
 
@@ -165,7 +165,7 @@ CItemHash::CItemHash(const std::string& ItemName)
 		std::println("[CItemHash] Generated hash {0:X} for item name {1}", m_Hash, std::string(ItemName.begin(), ItemName.end()).c_str());
 }
 
-const char* CItemHash::GetName() const
+const char* CNameHash::GetName() const
 {
 	if (gItemNames.find(m_Hash) != gItemNames.end())
 		return gItemNames.at(m_Hash).c_str();
@@ -176,7 +176,7 @@ const char* CItemHash::GetName() const
 	return nullptr;
 }
 
-const bool CItemHash::IsValuable() const
+const bool CNameHash::IsValuable() const
 {
 	return gValuables.find(m_Hash) != gValuables.end();
 }

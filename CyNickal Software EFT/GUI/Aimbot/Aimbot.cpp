@@ -24,10 +24,6 @@ void Aimbot::RenderSettings()
 	ImGui::SliderFloat("Dampen", &fDampen, 0.01f, 1.0f);
 	ImGui::SliderFloat("FOV", &fPixelFOV, 1.0f, 300.0f);
 	ImGui::SliderFloat("Deadzone FOV", &fDeadzoneFov, 1.0f, 10.0f);
-	ImGui::Text("Keybind: %s", CKeybind::VKCodeToString(m_Keybind));
-	ImGui::SameLine();
-	ImGui::SetNextItemWidth(50.0f);
-	ImGui::InputScalar("##AimbotKey", ImGuiDataType_U32, &m_Keybind);
 
 	ImGui::End();
 }

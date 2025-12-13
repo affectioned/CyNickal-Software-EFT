@@ -3,6 +3,7 @@
 #include "Game/Player List/Player List.h"
 #include "Game/Camera/Camera.h"
 #include "Game/Enums/EBoneIndex.h"
+#include "GUI/Color Picker/Color Picker.h"
 
 void DrawESPPlayers::DrawAll(const ImVec2& WindowPos, ImDrawList* DrawList)
 {
@@ -57,19 +58,33 @@ void DrawESPPlayers::DrawObservedPlayerHealthText(const CObservedPlayer& Player,
 
 void DrawESPPlayers::DrawPlayerWeapon(const CHeldItem* pHands, const ImVec2& WindowPos, ImDrawList* DrawList, uint8_t& LineNumber)
 {
-	if (pHands == nullptr)
-		return;
-
+	if (!pHands) return;
 	if (pHands->IsInvalid()) return;
 
-	const char* ItemName = pHands->m_HeldItem.GetSanitizedName();
+	auto& HeldItem = pHands->m_pHeldItem;
 
-	auto TextSize = ImGui::CalcTextSize(pHands->m_HeldItem.GetSanitizedName());
 	auto& ProjectedRootPos = m_ProjectedBoneCache[Sketon_MyIndicies[EBoneIndex::Root]];
+	ImVec2 RootScreenPos = { WindowPos.x + ProjectedRootPos.x, WindowPos.y + ProjectedRootPos.y };
+
+	const char* ItemName = pHands->m_pHeldItem->GetSanitizedName();
+
+	auto TextSize = ImGui::CalcTextSize(HeldItem->GetSanitizedName());
 	DrawList->AddText(
-		ImVec2(WindowPos.x + ProjectedRootPos.x - (TextSize.x / 2.0f), WindowPos.y + ProjectedRootPos.y + (ImGui::GetTextLineHeight() * LineNumber)),
-		ImColor(255, 255, 255, 255),
-		pHands->m_HeldItem.GetSanitizedName()
+		ImVec2(RootScreenPos.x - (TextSize.x / 2.0f), RootScreenPos.y + (ImGui::GetTextLineHeight() * LineNumber)),
+		ColorPicker::m_WeaponTextColor,
+		HeldItem->GetSanitizedName()
+	);
+	LineNumber++;
+
+	auto& Magazine = pHands->m_pMagazine;
+	if (Magazine == nullptr) return;
+
+	std::string MagText = std::format("{0:d} {1:s}", Magazine->m_CurrentCartridges, Magazine->m_pAmmoItemTemplate->m_sName.c_str());
+	TextSize = ImGui::CalcTextSize(MagText.c_str());
+	DrawList->AddText(
+		ImVec2(RootScreenPos.x - (TextSize.x / 2.0f), RootScreenPos.y + (ImGui::GetTextLineHeight() * LineNumber)),
+		ColorPicker::m_WeaponTextColor,
+		MagText.c_str()
 	);
 	LineNumber++;
 }

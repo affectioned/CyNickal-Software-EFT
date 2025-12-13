@@ -23,6 +23,7 @@ bool EFT::Initialize(DMA_Connection* Conn)
 	catch (const std::exception& e)
 	{
 		std::println("EFT Initialization failed: {}", e.what());
+		system("pause");
 		return false;
 	}
 

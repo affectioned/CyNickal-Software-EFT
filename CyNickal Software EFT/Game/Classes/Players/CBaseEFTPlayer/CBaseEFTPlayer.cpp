@@ -104,14 +104,6 @@ void CBaseEFTPlayer::PrepareRead_10(VMMDLL_SCATTER_HANDLE vmsh)
 	m_pSkeleton->PrepareRead_8(vmsh);
 }
 
-void CBaseEFTPlayer::PrepareRead_11(VMMDLL_SCATTER_HANDLE vmsh)
-{
-}
-
-void CBaseEFTPlayer::PrepareRead_12(VMMDLL_SCATTER_HANDLE vmsh)
-{
-}
-
 void CBaseEFTPlayer::Finalize()
 {
 	if (IsInvalid())

@@ -112,8 +112,6 @@ void CObservedPlayer::PrepareRead_10(VMMDLL_SCATTER_HANDLE vmsh)
 
 void CObservedPlayer::PrepareRead_11(VMMDLL_SCATTER_HANDLE vmsh)
 {
-	CBaseEFTPlayer::PrepareRead_11(vmsh);
-
 	if (IsInvalid())
 		return;
 
@@ -122,12 +120,26 @@ void CObservedPlayer::PrepareRead_11(VMMDLL_SCATTER_HANDLE vmsh)
 
 void CObservedPlayer::PrepareRead_12(VMMDLL_SCATTER_HANDLE vmsh)
 {
-	CBaseEFTPlayer::PrepareRead_12(vmsh);
-
 	if (IsInvalid())
 		return;
 
 	m_pHands->PrepareRead_8(vmsh);
+}
+
+void CObservedPlayer::PrepareRead_13(VMMDLL_SCATTER_HANDLE vmsh)
+{
+	if (IsInvalid())
+		return;
+
+	m_pHands->PrepareRead_9(vmsh);
+}
+
+void CObservedPlayer::PrepareRead_14(VMMDLL_SCATTER_HANDLE vmsh)
+{
+	if (IsInvalid())
+		return;
+
+	m_pHands->PrepareRead_10(vmsh);
 }
 
 void CObservedPlayer::Finalize()
@@ -163,8 +175,6 @@ void CObservedPlayer::QuickFinalize()
 	CBaseEFTPlayer::QuickFinalize();
 
 	if (IsInvalid()) return;
-
-	m_pHands->QuickFinalize();
 }
 
 const bool CObservedPlayer::IsInCondition(const ETagStatus status) const

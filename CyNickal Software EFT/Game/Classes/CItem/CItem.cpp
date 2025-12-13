@@ -6,7 +6,7 @@
 
 CItem::CItem(uintptr_t EntityAddress) : CBaseEntity(EntityAddress)
 {
-	//std::println("[CItem] constructed {0:X}", m_EntityAddress);
+	std::println("[CItem] constructed {0:X}", m_EntityAddress);
 }
 
 void CItem::PrepareRead_1(VMMDLL_SCATTER_HANDLE vmsh)
@@ -26,21 +26,15 @@ void CItem::PrepareRead_2(VMMDLL_SCATTER_HANDLE vmsh)
 
 	if (IsInvalid()) return;
 
-	VMMDLL_Scatter_PrepareEx(vmsh, m_ItemTemplateAddress + Offsets::CItemTemplate::pName, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_ItemTemplateNameAddress), reinterpret_cast<DWORD*>(&m_BytesRead));
+	m_pItemTemplate = std::make_unique<CItemTemplate>(m_ItemTemplateAddress);
+	m_pItemTemplate->PrepareRead_1(vmsh);
 }
 
 void CItem::PrepareRead_3(VMMDLL_SCATTER_HANDLE vmsh)
 {
-	if (m_BytesRead != sizeof(uintptr_t))
-		SetInvalid();
-
-	if (!m_ItemTemplateNameAddress)
-		SetInvalid();
-
 	if (IsInvalid()) return;
 
-	m_wItemNameBuffer.fill(0);
-	VMMDLL_Scatter_PrepareEx(vmsh, m_ItemTemplateNameAddress + 0x14, sizeof(m_wItemNameBuffer), reinterpret_cast<BYTE*>(&m_wItemNameBuffer), reinterpret_cast<DWORD*>(&m_BytesRead));
+	m_pItemTemplate->PrepareRead_2(vmsh);
 }
 
 void CItem::CompleteUpdate()
@@ -84,30 +78,27 @@ uint32_t JOAAT(T String) {
 std::string BuiltName{};
 void CItem::Finalize()
 {
-	if (m_BytesRead != sizeof(m_wItemNameBuffer))
+	if (!m_pItemTemplate || m_pItemTemplate->IsInvalid())
 		SetInvalid();
 
 	if (IsInvalid()) return;
 
-	for (int i = 0; i < 32; i++)
-		m_ItemNameBuffer[i] = static_cast<char>(m_wItemNameBuffer[i]);
-
-	BuiltName.clear();
-	BuiltName = std::string(m_ItemNameBuffer.data(),32);
-	m_ItemHash = CItemHash(BuiltName);
+	m_pItemTemplate->Finalize();
 }
 
 const char* CItem::GetUnfilteredName() const
 {
-	return m_ItemNameBuffer.data();
+	if (m_pItemTemplate)
+		return m_pItemTemplate->m_sName.c_str();
+
+	return "Unknown";
 }
 
 const char* CItem::GetSanitizedName() const
 {
-	auto HashName = m_ItemHash.GetName();
-
-	if (HashName)
-		return HashName;
+	if (m_pItemTemplate && m_pItemTemplate->m_pNameHash)
+		if (auto Ret = m_pItemTemplate->m_pNameHash->GetName(); Ret != nullptr)
+			return Ret;
 
 	return "Unknown";
 }

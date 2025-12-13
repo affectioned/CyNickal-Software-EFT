@@ -144,7 +144,7 @@
     <ClCompile Include="..\Dependencies\sqlite\sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Classes\CItemHash\CItemHash.cpp">
+    <ClCompile Include="Game\Classes\CNameHash\CNameHash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Keybinds\Keybinds.cpp">
@@ -166,6 +166,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GUI\Fuser\Overlays\Ammo Count\Ammo Count.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Classes\CItemTemplate\CItemTemplate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -332,7 +335,7 @@
     <ClInclude Include="Database\Database.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Classes\CItemHash\CItemHash.h">
+    <ClInclude Include="Game\Classes\CNameHash\CNameHash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Keybinds\Keybinds.h">
@@ -357,6 +360,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Fuser\Overlays\Ammo Count\Ammo Count.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Classes\CItemTemplate\CItemTemplate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

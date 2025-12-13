@@ -1,7 +1,7 @@
 #pragma once
 #include "Game/Classes/CBaseEntity/CBaseEntity.h"
 #include "Game/Classes/CUnityTransform/CUnityTransform.h"
-#include "Game/Classes/CItemHash/CItemHash.h"
+#include "Game/Classes/CNameHash/CNameHash.h"
 
 class CLoot : public CBaseEntity
 {
@@ -26,7 +26,7 @@ public:
 public:
 	std::array<char, 64> m_Name{};
 	Vector3 m_Position{};
-	CItemHash m_ItemHash{ "" };
+	CNameHash m_ItemHash{ "" };
 
 private:
 	CUnityTransform m_Transform{ 0x0 };

@@ -236,8 +236,9 @@
     </ClCompile>
     <ClCompile Include="Database\Database.cpp" />
     <ClCompile Include="Game\Classes\CExfilPoint\CExfilPoint.cpp" />
+    <ClCompile Include="Game\Classes\CItemTemplate\CItemTemplate.cpp" />
     <ClCompile Include="Game\Classes\CMagazine\CMagazine.cpp" />
-    <ClCompile Include="Game\Classes\CItemHash\CItemHash.cpp" />
+    <ClCompile Include="Game\Classes\CNameHash\CNameHash.cpp" />
     <ClCompile Include="DMA\DMA Thread.cpp" />
     <ClCompile Include="DMA\DMA.cpp" />
     <ClCompile Include="DMA\Input Manager.cpp" />
@@ -292,8 +293,9 @@
     <ClInclude Include="..\Dependencies\ImGui\imstb_truetype.h" />
     <ClInclude Include="Database\Database.h" />
     <ClInclude Include="Game\Classes\CExfilPoint\CExfilPoint.h" />
+    <ClInclude Include="Game\Classes\CItemTemplate\CItemTemplate.h" />
     <ClInclude Include="Game\Classes\CMagazine\CMagazine.h" />
-    <ClInclude Include="Game\Classes\CItemHash\CItemHash.h" />
+    <ClInclude Include="Game\Classes\CNameHash\CNameHash.h" />
     <ClInclude Include="DMA\DMA Thread.h" />
     <ClInclude Include="DMA\DMA.h" />
     <ClInclude Include="DMA\Input Manager.h" />

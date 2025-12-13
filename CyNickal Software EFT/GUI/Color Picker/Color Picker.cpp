@@ -16,6 +16,7 @@ void ColorPicker::Render()
 	MyColorPicker("Loot Color", m_LootColor);
 	MyColorPicker("Valuable Loot Color", m_ValuableLootColor);
 	MyColorPicker("Exfil Color", m_ExfilColor);
+	MyColorPicker("Weapon Text Color", m_WeaponTextColor);
 
 	ImGui::End();
 }

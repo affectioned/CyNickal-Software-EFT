@@ -13,7 +13,7 @@ public:
 public:
 	void Render();
 	const bool IsActive(DMA_Connection* Conn);
-	static const char* VKCodeToString(uint32_t vkCode);
+	const char* GetKeyName(uint32_t vkCode);
 };
 
 class Keybinds

@@ -16,14 +16,16 @@ public:
 	void PrepareRead_6(VMMDLL_SCATTER_HANDLE vmsh);
 	void PrepareRead_7(VMMDLL_SCATTER_HANDLE vmsh);
 	void PrepareRead_8(VMMDLL_SCATTER_HANDLE vmsh);
+	void PrepareRead_9(VMMDLL_SCATTER_HANDLE vmsh);
+	void PrepareRead_10(VMMDLL_SCATTER_HANDLE vmsh);
 	void QuickRead(VMMDLL_SCATTER_HANDLE vmsh, EPlayerType PlayerType);
 	void Finalize();
 	void QuickFinalize();
 	void CompleteUpdate(EPlayerType PlayerType);
 
 public:
-	CItem m_HeldItem{ 0x0 };
-	std::unique_ptr<CMagazine> m_pMagazine{ nullptr };
+	std::unique_ptr <CItem> m_pHeldItem{ nullptr };
+	std::unique_ptr <CMagazine> m_pMagazine{ nullptr };
 
 private:
 	uintptr_t m_HeldItemAddress{ 0 };

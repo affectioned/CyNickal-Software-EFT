@@ -70,6 +70,16 @@ void PlayerList::ExecuteReadsOnPlayerVec(DMA_Connection* Conn, std::vector<Playe
 	VMMDLL_Scatter_Execute(vmsh);
 	VMMDLL_Scatter_Clear(vmsh, PID, VMMDLL_FLAG_NOCACHE);
 
+	for (auto& Player : Players)
+		std::visit([vmsh](auto& p) { p.PrepareRead_13(vmsh); }, Player);
+	VMMDLL_Scatter_Execute(vmsh);
+	VMMDLL_Scatter_Clear(vmsh, PID, VMMDLL_FLAG_NOCACHE);
+
+	for (auto& Player : Players)
+		std::visit([vmsh](auto& p) { p.PrepareRead_14(vmsh); }, Player);
+	VMMDLL_Scatter_Execute(vmsh);
+	VMMDLL_Scatter_Clear(vmsh, PID, VMMDLL_FLAG_NOCACHE);
+
 	VMMDLL_Scatter_CloseHandle(vmsh);
 
 	for (auto& Player : Players)

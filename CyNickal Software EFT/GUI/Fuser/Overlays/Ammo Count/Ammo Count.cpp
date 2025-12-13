@@ -6,15 +6,18 @@ void AmmoCountOverlay::Render()
 {
 	auto WindowSize = ImGui::GetWindowSize();
 	auto WindowPos = ImGui::GetWindowPos();
-	ImGui::PushFont(nullptr, 32.0f);
 
 	std::pair<uint32_t, uint32_t> AmmoCountPair = GetLocalPlayerAmmoCount();
+	if (AmmoCountPair.second == 0)
+		return;
+
+	ImGui::PushFont(nullptr, 32.0f);
 	std::string AmmoString = std::format("{}/{}", AmmoCountPair.first, AmmoCountPair.second);
 	auto TextSize = ImGui::CalcTextSize(AmmoString.c_str());
 
 	ImGui::SetNextWindowPos({ WindowPos.x + (WindowSize.x * 0.5f) - (TextSize.x * 0.5f), WindowPos.y + WindowSize.y - TextSize.y });
-	ImGui::SetNextWindowSize({TextSize.x , TextSize.y});
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {4.0f,0.0f});
+	ImGui::SetNextWindowSize({ TextSize.x , TextSize.y });
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 4.0f,0.0f });
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2());
 	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2());

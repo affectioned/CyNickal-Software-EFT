@@ -106,6 +106,37 @@ void CClientPlayer::PrepareRead_9(VMMDLL_SCATTER_HANDLE vmsh)
 	m_pHands->PrepareRead_8(vmsh);
 }
 
+void CClientPlayer::PrepareRead_10(VMMDLL_SCATTER_HANDLE vmsh)
+{
+	CBaseEFTPlayer::PrepareRead_10(vmsh);
+
+	if (IsInvalid())
+		return;
+
+	m_pHands->PrepareRead_9(vmsh);
+}
+
+void CClientPlayer::PrepareRead_11(VMMDLL_SCATTER_HANDLE vmsh)
+{
+	if (IsInvalid())
+		return;
+
+	m_pHands->PrepareRead_10(vmsh);
+}
+
+/* Empty methods to keep interface same as CObservedPlayer */
+void CClientPlayer::PrepareRead_12(VMMDLL_SCATTER_HANDLE vmsh)
+{
+}
+
+void CClientPlayer::PrepareRead_13(VMMDLL_SCATTER_HANDLE vmsh)
+{
+}
+
+void CClientPlayer::PrepareRead_14(VMMDLL_SCATTER_HANDLE vmsh)
+{
+}
+
 void CClientPlayer::QuickRead(VMMDLL_SCATTER_HANDLE vmsh)
 {
 	CBaseEFTPlayer::QuickRead(vmsh, EPlayerType::eMainPlayer);

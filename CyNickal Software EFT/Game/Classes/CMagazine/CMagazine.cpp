@@ -19,12 +19,13 @@ void CMagazine::PrepareRead_2(VMMDLL_SCATTER_HANDLE vmsh)
 	if (m_BytesRead != sizeof(uintptr_t))
 		SetInvalid();
 
-	if(!m_ContainedItemAddress)
+	if (!m_ContainedItemAddress)
 		SetInvalid();
 
 	if (IsInvalid()) return;
-	
+
 	VMMDLL_Scatter_PrepareEx(vmsh, m_ContainedItemAddress + Offsets::CItem::pCartridges, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_MagazineCartridgesAddress), reinterpret_cast<DWORD*>(&m_BytesRead));
+	VMMDLL_Scatter_PrepareEx(vmsh, m_ContainedItemAddress + Offsets::CItem::pTemplate, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_MagazineTemplateAddress), nullptr);
 }
 
 void CMagazine::PrepareRead_3(VMMDLL_SCATTER_HANDLE vmsh)
@@ -36,6 +37,9 @@ void CMagazine::PrepareRead_3(VMMDLL_SCATTER_HANDLE vmsh)
 		SetInvalid();
 
 	if (IsInvalid()) return;
+
+	m_pMagazineItemTemplate = std::make_unique<CItemTemplate>(m_MagazineTemplateAddress);
+	m_pMagazineItemTemplate->PrepareRead_1(vmsh);
 
 	VMMDLL_Scatter_PrepareEx(vmsh, m_MagazineCartridgesAddress + Offsets::CStackSlot::pItems, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_StackItemsAddress), reinterpret_cast<DWORD*>(&m_BytesRead));
 	VMMDLL_Scatter_PrepareEx(vmsh, m_MagazineCartridgesAddress + Offsets::CStackSlot::Max, sizeof(uint32_t), reinterpret_cast<BYTE*>(&m_MaxCartridges), nullptr);
@@ -50,6 +54,8 @@ void CMagazine::PrepareRead_4(VMMDLL_SCATTER_HANDLE vmsh)
 		SetInvalid();
 
 	if (IsInvalid()) return;
+
+	m_pMagazineItemTemplate->PrepareRead_2(vmsh);
 
 	VMMDLL_Scatter_PrepareEx(vmsh, m_StackItemsAddress + 0x10, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_ListAddress), reinterpret_cast<DWORD*>(&m_BytesRead));
 }
@@ -78,11 +84,42 @@ void CMagazine::PrepareRead_6(VMMDLL_SCATTER_HANDLE vmsh)
 	if (IsInvalid()) return;
 
 	VMMDLL_Scatter_PrepareEx(vmsh, m_AmmoItemAddress + Offsets::CItem::StackCount, sizeof(uint32_t), reinterpret_cast<BYTE*>(&m_CurrentCartridges), reinterpret_cast<DWORD*>(&m_BytesRead));
+	VMMDLL_Scatter_PrepareEx(vmsh, m_AmmoItemAddress + Offsets::CItem::pTemplate, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_AmmoTemplateAddress), nullptr);
+}
+
+void CMagazine::PrepareRead_7(VMMDLL_SCATTER_HANDLE vmsh)
+{
+	if (m_BytesRead != sizeof(uint32_t))
+		SetInvalid();
+
+	if (!m_AmmoTemplateAddress)
+		SetInvalid();
+
+	if (IsInvalid()) return;
+
+	m_pAmmoItemTemplate = std::make_unique<CItemTemplate>(m_AmmoTemplateAddress);
+	m_pAmmoItemTemplate->PrepareRead_1(vmsh);
+}
+
+void CMagazine::PrepareRead_8(VMMDLL_SCATTER_HANDLE vmsh)
+{
+	if (IsInvalid()) return;
+
+	m_pAmmoItemTemplate->PrepareRead_2(vmsh);
 }
 
 void CMagazine::Finalize()
 {
+	if (m_pMagazineItemTemplate == nullptr || m_pMagazineItemTemplate->IsInvalid())
+		SetInvalid();
+
+	if (m_pAmmoItemTemplate == nullptr || m_pAmmoItemTemplate->IsInvalid())
+		SetInvalid();
+
 	if (IsInvalid()) return;
+
+	m_pMagazineItemTemplate->Finalize();
+	m_pAmmoItemTemplate->Finalize();
 }
 
 void CMagazine::QuickRead(VMMDLL_SCATTER_HANDLE vmsh)

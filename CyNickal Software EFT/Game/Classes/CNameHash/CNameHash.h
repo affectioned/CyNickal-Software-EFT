@@ -1,9 +1,9 @@
 #pragma once
 
-class CItemHash
+class CNameHash
 {
 public:
-	CItemHash(const std::string& WeaponName);
+	CNameHash(const std::string& WeaponName);
 	const char* GetName() const;
 	const uint32_t GetHash() const { return m_Hash; }
 	const bool IsValuable() const;
