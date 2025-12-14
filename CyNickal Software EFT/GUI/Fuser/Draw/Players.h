@@ -4,6 +4,12 @@
 #include "Game/Classes/CPlayerSkeleton/CPlayerSkeleton.h"
 #include "Game/Classes/CHeldItem/CHeldItem.h"
 
+struct ProjectedBoneInfo
+{
+	Vector2 ScreenPos{};
+	bool bIsOnScreen{ false };
+};
+
 class DrawESPPlayers
 {
 public:
@@ -24,5 +30,5 @@ private:
 
 private:
 	static inline Vector3 m_LatestLocalPlayerPos{};
-	static inline std::array<Vector2, SKELETON_NUMBONES> m_ProjectedBoneCache{};
+	static inline std::array<ProjectedBoneInfo, SKELETON_NUMBONES> m_ProjectedBoneCache{};
 };

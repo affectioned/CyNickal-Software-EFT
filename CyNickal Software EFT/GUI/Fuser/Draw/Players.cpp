@@ -31,7 +31,7 @@ void  DrawESPPlayers::DrawGenericPlayerText(const CBaseEFTPlayer& Player, const 
 {
 	std::string Text = std::format("{0:s} [{1:.0f}m]", Player.GetBaseName(), Player.GetBonePosition(EBoneIndex::Root).DistanceTo(m_LatestLocalPlayerPos));
 	auto& ProjectedRootPos = m_ProjectedBoneCache[Sketon_MyIndicies[EBoneIndex::Root]];
-	DrawTextAtPosition(DrawList, ImVec2(WindowPos.x + ProjectedRootPos.x, WindowPos.y + ProjectedRootPos.y + (ImGui::GetTextLineHeight() * LineNumber)), Player.GetSideColor(), Text);
+	DrawTextAtPosition(DrawList, ImVec2(WindowPos.x + ProjectedRootPos.ScreenPos.x, WindowPos.y + ProjectedRootPos.ScreenPos.y + (ImGui::GetTextLineHeight() * LineNumber)), Player.GetSideColor(), Text);
 	LineNumber++;
 }
 
@@ -52,7 +52,7 @@ void DrawESPPlayers::DrawObservedPlayerHealthText(const CObservedPlayer& Player,
 	if (DataPtr == nullptr) return;
 
 	auto& ProjectedRootPos = m_ProjectedBoneCache[Sketon_MyIndicies[EBoneIndex::Root]];
-	DrawTextAtPosition(DrawList, ImVec2(WindowPos.x + ProjectedRootPos.x, WindowPos.y + ProjectedRootPos.y + (ImGui::GetTextLineHeight() * LineNumber)), Player.GetSideColor(), DataPtr);
+	DrawTextAtPosition(DrawList, ImVec2(WindowPos.x + ProjectedRootPos.ScreenPos.x, WindowPos.y + ProjectedRootPos.ScreenPos.y + (ImGui::GetTextLineHeight() * LineNumber)), Player.GetSideColor(), DataPtr);
 	LineNumber++;
 }
 
@@ -64,7 +64,7 @@ void DrawESPPlayers::DrawPlayerWeapon(const CHeldItem* pHands, const ImVec2& Win
 	auto& HeldItem = pHands->m_pHeldItem;
 
 	auto& ProjectedRootPos = m_ProjectedBoneCache[Sketon_MyIndicies[EBoneIndex::Root]];
-	ImVec2 RootScreenPos = { WindowPos.x + ProjectedRootPos.x, WindowPos.y + ProjectedRootPos.y };
+	ImVec2 RootScreenPos = { WindowPos.x + ProjectedRootPos.ScreenPos.x, WindowPos.y + ProjectedRootPos.ScreenPos.y };
 
 	auto ItemName = pHands->m_pHeldItem->GetItemName(ENameMap::Weapons);
 
@@ -98,7 +98,7 @@ void DrawESPPlayers::Draw(const CObservedPlayer& Player, const ImVec2& WindowPos
 	m_ProjectedBoneCache.fill({});
 
 	for (int i = 0; i < SKELETON_NUMBONES; i++)
-		if (Camera::WorldToScreen(Player.m_pSkeleton->m_BonePositions[i], m_ProjectedBoneCache[i])) return;
+		m_ProjectedBoneCache[i].bIsOnScreen = Camera::WorldToScreen(Player.m_pSkeleton->m_BonePositions[i], m_ProjectedBoneCache[i].ScreenPos);
 
 	uint8_t LineNumber = 0;
 
@@ -110,7 +110,7 @@ void DrawESPPlayers::Draw(const CObservedPlayer& Player, const ImVec2& WindowPos
 
 	if (bHeadDot) {
 		auto& ProjectedHeadPos = m_ProjectedBoneCache[Sketon_MyIndicies[EBoneIndex::Head]];
-		DrawList->AddCircle(ImVec2(WindowPos.x + ProjectedHeadPos.x, WindowPos.y + ProjectedHeadPos.y), 4.0f, Player.GetSideColor(), 12, 1.0f);
+		DrawList->AddCircle(ImVec2(WindowPos.x + ProjectedHeadPos.ScreenPos.x, WindowPos.y + ProjectedHeadPos.ScreenPos.y), 4.0f, Player.GetSideColor(), 12, 1.0f);
 	}
 
 	if (bSkeleton)
@@ -128,7 +128,10 @@ void DrawESPPlayers::Draw(const CClientPlayer& Player, const ImVec2& WindowPos, 
 	m_ProjectedBoneCache.fill({});
 
 	for (int i = 0; i < SKELETON_NUMBONES; i++)
-		if (!Camera::WorldToScreen(Player.m_pSkeleton->m_BonePositions[i], m_ProjectedBoneCache[i])) return;
+		m_ProjectedBoneCache[i].bIsOnScreen = Camera::WorldToScreen(Player.m_pSkeleton->m_BonePositions[i], m_ProjectedBoneCache[i].ScreenPos);
+
+	if (m_ProjectedBoneCache[Sketon_MyIndicies[EBoneIndex::Root]].bIsOnScreen == false)
+		return;
 
 	uint8_t LineNumber = 0;
 
@@ -139,18 +142,21 @@ void DrawESPPlayers::Draw(const CClientPlayer& Player, const ImVec2& WindowPos, 
 
 	if (bHeadDot) {
 		auto& ProjectedHeadPos = m_ProjectedBoneCache[Sketon_MyIndicies[EBoneIndex::Head]];
-		DrawList->AddCircle(ImVec2(WindowPos.x + ProjectedHeadPos.x, WindowPos.y + ProjectedHeadPos.y), 4.0f, Player.GetSideColor(), 12, 1.0f);
+		DrawList->AddCircle(ImVec2(WindowPos.x + ProjectedHeadPos.ScreenPos.x, WindowPos.y + ProjectedHeadPos.ScreenPos.y), 4.0f, Player.GetSideColor(), 12, 1.0f);
 	}
 
 	if (bSkeleton)
 		DrawSkeleton(*Player.m_pSkeleton, WindowPos, DrawList);
 }
 
-void ConnectBones(const Vector2& BoneA, const Vector2& BoneB, const ImVec2& WindowPos, ImDrawList* DrawList, const ImColor& Color, float Thickness)
+void ConnectBones(const ProjectedBoneInfo& BoneA, const ProjectedBoneInfo& BoneB, const ImVec2& WindowPos, ImDrawList* DrawList, const ImColor& Color, float Thickness)
 {
+	if (BoneA.bIsOnScreen == false || BoneB.bIsOnScreen == false)
+		return;
+
 	DrawList->AddLine(
-		{ WindowPos.x + BoneA.x, WindowPos.y + BoneA.y },
-		{ WindowPos.x + BoneB.x, WindowPos.y + BoneB.y },
+		{ WindowPos.x + BoneA.ScreenPos.x, WindowPos.y + BoneA.ScreenPos.y },
+		{ WindowPos.x + BoneB.ScreenPos.x, WindowPos.y + BoneB.ScreenPos.y },
 		Color,
 		Thickness
 	);
