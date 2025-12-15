@@ -9,7 +9,7 @@ def run_query(query):
     else:
         raise Exception("Query failed to run by returning code of {}. {}".format(response.status_code, query))
 
-new_query = """
+ItemQuery = """
 {
   items(lang: en) {
     id
@@ -23,28 +23,44 @@ new_query = """
   }
 }
 """
+def UpdateItemTable():
+    con = sqlite3.connect('../CyNickal Software EFT/EFT_Data.db');
+    cur = con.cursor();
+    result = run_query(ItemQuery);
+    for Item in result['data']['items']:
 
-result = run_query(new_query)
+        HighestTraderPrice = -1;
+            
+        for SellOption in Item['sellFor']:
+            price = SellOption['priceRUB'];
+            vendor = SellOption["vendor"]["name"];
+            if(vendor == "Flea Market"):
+                continue;
 
-ResultSize = len(result['data']['items'])
+            if(price > HighestTraderPrice):
+                HighestTraderPrice = price;
 
-con = sqlite3.connect('C:\\Users\\admin\\source\\repos\\sqlite_testing\\EFT_Data.db')
-cur = con.cursor()
+        cur.execute("INSERT OR IGNORE INTO item_data (bsg_id, short_name, trader_price) VALUES (?, ?, ?)", (Item['id'], Item['shortName'], HighestTraderPrice));
 
-for i in range(ResultSize):
-    item = result['data']['items'][i]
+    con.commit();
+    con.close();
 
-    HighestPrice = -1;
-    for sellOption in item['sellFor']:
-        price = sellOption['priceRUB']
-        vendor = sellOption['vendor']['name']
-        if(vendor == "Flea Market"):          
-            continue
+ContainerQuery = """
+{
+  lootContainers {
+    id
+    name
+  }
+}
+"""
+def UpdateContainerTable():
+    con = sqlite3.connect('../CyNickal Software EFT/EFT_Data.db');
+    cur = con.cursor();
 
-        if price > HighestPrice:
-            HighestPrice = price
+    result = run_query(ContainerQuery);
 
-    cur.execute("INSERT INTO item_data (bsg_id, short_name, trader_price) VALUES (?, ?, ?)", (item['id'], item['shortName'], HighestPrice))
+    for Item in result['data']['lootContainers']:
+       cur.execute("INSERT OR IGNORE INTO container_data (bsg_id, short_name) VALUES (?, ?)", (Item['id'], Item['name']));
 
-con.commit()
-con.close() 
+    con.commit();
+    con.close();

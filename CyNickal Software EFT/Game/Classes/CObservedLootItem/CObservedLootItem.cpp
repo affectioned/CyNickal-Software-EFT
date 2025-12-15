@@ -30,6 +30,6 @@ void CObservedLootItem::Finalize()
 	CBaseLootItem::Finalize();
 
 	std::string TarkovIDStr = std::string(m_TarkovID.begin(), m_TarkovID.end());
-	m_ItemPrice = TarkovPriceTable::GetPriceOfItem(TarkovIDStr);
-	m_Name = TarkovPriceTable::GetShortNameOfItem(TarkovIDStr);
+	m_ItemPrice = TarkovItemData::GetPriceOfItem(TarkovIDStr);
+	m_Name = TarkovItemData::GetShortNameOfItem(TarkovIDStr);
 }

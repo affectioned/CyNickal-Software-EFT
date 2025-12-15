@@ -233,4 +233,10 @@ namespace Offsets
 	{
 		inline constexpr std::ptrdiff_t pTemplateID{ 0x80 };
 	}
+
+	/* EFT.Interactive::LootItem */
+	namespace CLootableContainer
+	{
+		inline constexpr std::ptrdiff_t pBSGID{ 0x170 };
+	}
 };

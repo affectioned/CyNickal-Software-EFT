@@ -132,105 +132,10 @@ std::unordered_map<uint32_t, std::string> m_AmmoNames
 	{0xE8683D4E, "TPZ SP"},
 };
 
-std::unordered_map<uint32_t, std::string> m_ItemNames
-{
-	{0x7107CDBF, "Power Cord"},
-	{0x690F712C, "Pliers"},
-	{0xD661A199, "Elite Pliers"},
-	{0x02BCECDE, "Propane"},
-	{0x14698670, "RFID Reader"},
-	{0x1102B85B, "Tushonka"},
-	{0xE80284D2, "Salewa"},
-	{0xCA057ECE, "PSU"},
-	{0xD2D7055D, "Emelya"},
-	{0x6F1A0D0B, "Energy Drink"},
-	{0xDDCFFAD3, "AA Batteries"},
-	{0x4F7BA371, "Drill"},
-	{0x772D13F3, "Toothpaste"},
-	{0x70469D50, "Chlorine"},
-	{0x3B7D8313, "Hemostatic"},
-	{0x797842E5, "Soap"},
-	{0xF009B83A, "WD-40"},
-	{0x1D0DA675, "Meds Pile"},
-	{0x05B8E4FF, "Iskra"},
-	{0xFFE332E5, "Wires"},
-	{0x6BFF0CB3, "Car Battery"},
-	{0x07CC0C28, "TNT Brick"},
-	{0x6B4F9B4C, "Hose"},
-	{0x35857077, "Marlboro"},
-	{0x35857077, "Wilston"},
-	{0xB8F989D8, "Strike"},
-	{0x51D7E7F1, "Apollo"},
-	{0x8532DCC1, "Gasoline"},
-	{0x625E5BC7, "Screw"},
-	{0xFD18E74F, "Magnet"},
-	{0x37FD69B5, "Relay"},
-	{0x58E2F9CB, "HDD"},
-	{0xA0A48C70, "Modem"},
-	{0xE6DA96F9, "Vitamins"},
-	{0xB42C3AFC, "NaCl"},
-	{0x7104340F, "Kektape"},
-	{0x872007BC, "Helix"},
-	{0x88CF336B, "LCD"},
-	{0xB5CE963B, "Awl"},
-	{0xA53E25C7, "Hand Drill"},
-	{0x441406F3, "Screwdriver"},
-	{0x8C4C4C3C, "Long Screwdriver"},
-	{0xA47716C1, "WD-40"},
-
-
-	{0x1D2E27D9, "PC Block"},
-	{0x1D3ADFCA, "Toolbox"},
-	{0xD328FEF6, "Sportbag"},
-	{0xB3E04EE3, "Jacket"},
-	{0x2C865C85, "Jacket"},
-	{0x9082B9FB, "Jacket"},
-	{0xAC53E66B, "Jacket"},
-	{0x19BE107F, "Filing Cabinet"},
-	{0x0F8CFC1D, "Filing Cabinet"},
-	{0x01365F70, "Filing Cabinet"},
-	{0x37154B39, "Filing Cabinet"},
-	{0x08F9E34D, "Static Corpse"},
-	{0xFE8849CF, "Static Corpse"},
-	{0x71DF944E, "Static Corpse"},
-	{0x3B201746, "Static Corpse"},
-	{0xBD7F0D0D, "Static Corpse"},
-	{0x70DE4832, "Static Corpse"},
-	{0xCF4CD897, "Static Corpse"},
-	{0xA9904ABD, "Ammo Crate"},
-	{0x84CAE97A, "Weapon Box"},
-	{0x3084DB15, "Medcase"},
-};
-
-std::unordered_map<uint32_t, std::string> m_Valuables
-{
-	{0x627F6841, "Bitcoin"},
-	{0x281E0D2C, "Golden Egg"},
-	{0x9FDB5E61, "Sledgehammer"},
-	{0x32A54032, "Intelligence"},
-	{0xCDF181D5, "Cat"},
-	{0x2A9827C2, "Parrot"},
-	{0x360C4F1F, "Teapot"},
-	{0x1C8CC38B, "Skullring"},
-	{0xA7D5AD85, "Kunai"},
-	{0x8443B372, "Medallion"},
-	{0xF4FEF1E3, "Lion"},
-	{0x90C1DB5E, "Rolex"},
-	{0x3588C73A, "GP"},
-	{0x8A7E0181, "Vase"},
-	{0x8DAB3325, "Chicken"},
-	{0x2475DDCB, "Raven"},
-	{0xAC48899A, "Badge"},
-	{0x939AFC6E, "Old Firesteel"},
-	{0xCC3E8545, "Defibrillator"},
-};
-
 std::array<std::unordered_map<uint32_t, std::string>, 4> m_NameMaps
 {
-	m_ItemNames,
 	m_WeaponNames,
 	m_AmmoNames,
-	m_Valuables
 };
 
 uint32_t JOAAT(const std::string& String) {
@@ -254,11 +159,6 @@ CNameHash::CNameHash(const std::string& ItemName)
 
 	if (m_Hash)
 		std::println("[CItemHash] Generated hash {0:X} for item name {1}", m_Hash, std::string(ItemName.begin(), ItemName.end()).c_str());
-}
-
-const bool CNameHash::IsValuable() const
-{
-	return m_NameMaps[std::to_underlying(ENameMap::Valuables)].find(m_Hash) != m_NameMaps[std::to_underlying(ENameMap::Valuables)].end();
 }
 
 const std::string* CNameHash::GetSanitizedName(ENameMap map) const

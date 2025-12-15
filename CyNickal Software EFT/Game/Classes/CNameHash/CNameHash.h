@@ -2,10 +2,8 @@
 
 enum class ENameMap : uint8_t
 {
-	Loot,
 	Weapons,
 	Ammo,
-	Valuables
 };
 
 class CNameHash
@@ -13,7 +11,6 @@ class CNameHash
 public:
 	CNameHash(const std::string& WeaponName);
 	const uint32_t GetHash() const { return m_Hash; }
-	const bool IsValuable() const;
 	const std::string* GetSanitizedName(ENameMap map) const;
 
 private:

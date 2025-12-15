@@ -73,7 +73,7 @@ void DrawESPLoot::DrawLoot(CLootableContainer& Container, ImDrawList* DrawList, 
 	if (Distance > fMaxContainerDistance)
 		return;
 
-	std::string DisplayString = std::format("Container [{0:.0f}m]", Distance);
+	std::string DisplayString = std::format("{0:s} [{1:.0f}m]", Container.GetName().c_str(), Distance);
 
 	auto TextSize = ImGui::CalcTextSize(DisplayString.c_str());
 

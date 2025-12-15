@@ -27,4 +27,7 @@ private:
 	uintptr_t m_GameObjectAddress{ 0 };
 	uintptr_t m_ComponentsAddress{ 0 };
 	uintptr_t m_TransformAddress{ 0 };
+
+protected:
+	uintptr_t GetGameObjectAddress() const { return m_GameObjectAddress; }
 };
