@@ -458,33 +458,33 @@ void Config::DeserializeConfig(const json& j) {
 		if (colorsTable.contains("Fuser"))
 		{
 			using namespace ColorPicker::Fuser;
-			const auto& RadarTable = colorsTable["Radar"];
-			if (RadarTable.contains("m_PMCColor")) {
-				m_PMCColor = RadarTable["m_PMCColor"].get<ImU32>();
+			const auto& FuserTable = colorsTable["Fuser"];
+			if (FuserTable.contains("m_PMCColor")) {
+				m_PMCColor = FuserTable["m_PMCColor"].get<ImU32>();
 			}
-			if (RadarTable.contains("m_ScavColor")) {
-				m_ScavColor = RadarTable["m_ScavColor"].get<ImU32>();
+			if (FuserTable.contains("m_ScavColor")) {
+				m_ScavColor = FuserTable["m_ScavColor"].get<ImU32>();
 			}
-			if (RadarTable.contains("m_PlayerScavColor")) {
-				m_PlayerScavColor = RadarTable["m_PlayerScavColor"].get<ImU32>();
+			if (FuserTable.contains("m_PlayerScavColor")) {
+				m_PlayerScavColor = FuserTable["m_PlayerScavColor"].get<ImU32>();
 			}
-			if (RadarTable.contains("m_BossColor")) {
-				m_BossColor = RadarTable["m_BossColor"].get<ImU32>();
+			if (FuserTable.contains("m_BossColor")) {
+				m_BossColor = FuserTable["m_BossColor"].get<ImU32>();
 			}
-			if (RadarTable.contains("m_LootColor")) {
-				m_LootColor = RadarTable["m_LootColor"].get<ImU32>();
+			if (FuserTable.contains("m_LootColor")) {
+				m_LootColor = FuserTable["m_LootColor"].get<ImU32>();
 			}
-			if (RadarTable.contains("m_ContainerColor")) {
-				m_ContainerColor = RadarTable["m_ContainerColor"].get<ImU32>();
+			if (FuserTable.contains("m_ContainerColor")) {
+				m_ContainerColor = FuserTable["m_ContainerColor"].get<ImU32>();
 			}
-			if (RadarTable.contains("m_ValuableLootColor")) {
-				m_ValuableLootColor = RadarTable["m_ValuableLootColor"].get<ImU32>();
+			if (FuserTable.contains("m_ValuableLootColor")) {
+				m_ValuableLootColor = FuserTable["m_ValuableLootColor"].get<ImU32>();
 			}
-			if (RadarTable.contains("m_ExfilColor")) {
-				m_ExfilColor = RadarTable["m_ExfilColor"].get<ImU32>();
+			if (FuserTable.contains("m_ExfilColor")) {
+				m_ExfilColor = FuserTable["m_ExfilColor"].get<ImU32>();
 			}
-			if (RadarTable.contains("m_WeaponTextColor")) {
-				m_WeaponTextColor = RadarTable["m_WeaponTextColor"].get<ImU32>();
+			if (FuserTable.contains("m_WeaponTextColor")) {
+				m_WeaponTextColor = FuserTable["m_WeaponTextColor"].get<ImU32>();
 			}
 		}
 	}
