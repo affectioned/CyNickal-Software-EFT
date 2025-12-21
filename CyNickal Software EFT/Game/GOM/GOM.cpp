@@ -2,6 +2,7 @@
 #include "GOM.h"
 #include "Game/EFT.h"
 #include <fstream>
+#include <unordered_set>
 #include "Game/Offsets/Offsets.h"
 #include "Game/Classes/CLinkedListEntry.h"
 
@@ -39,12 +40,21 @@ void GOM::GetObjectAddresses(DMA_Connection* Conn, uint32_t MaxNodes)
 	uintptr_t FirstNode = ActiveNodes;
 
 	auto vmsh = VMMDLL_Scatter_Initialize(Conn->GetHandle(), EFT::GetProcess().GetPID(), 0);
+
+	// Track visited nodes to avoid duplicates when doing bidirectional traversal
+	std::unordered_set<uintptr_t> VisitedNodes;
+
+	// Forward traversal
+	uint32_t ForwardCount = 0;
 	while (true)
 	{
-		if (CurrentActiveNode == LastActiveNode && NodeCount > 5)
+		if (CurrentActiveNode == LastActiveNode && ForwardCount > 5)
 			break;
 
-		if (NodeCount >= MaxNodes)
+		if (ForwardCount >= MaxNodes)
+			break;
+
+		if (VisitedNodes.contains(CurrentActiveNode))
 			break;
 
 		CLinkedListEntry NodeEntry{};
@@ -53,32 +63,74 @@ void GOM::GetObjectAddresses(DMA_Connection* Conn, uint32_t MaxNodes)
 		VMMDLL_Scatter_Clear(vmsh, Proc.GetPID(), 0);
 
 		if (BytesRead != sizeof(CLinkedListEntry))
-		{
-			std::println("[EFT] UpdateObjectList; Incomplete read: {0:d}/{1:d} @ {2:X}", BytesRead, sizeof(CLinkedListEntry), CurrentActiveNode);
 			break;
-		}
 
+		VisitedNodes.insert(CurrentActiveNode);
 		m_ObjectAddresses.push_back(NodeEntry.pObject);
 
 		if (NodeEntry.pNextEntry == FirstNode)
-		{
-			std::println("[EFT] UpdateObjectList; Reached back to first node, ending traversal.");
 			break;
-		}
 
 		if (NodeEntry.pNextEntry == 0)
-		{
-			std::println("[EFT] UpdateObjectList; Next entry is null, ending traversal.");
 			break;
-		}
 
 		CurrentActiveNode = NodeEntry.pNextEntry;
-		NodeCount++;
+		ForwardCount++;
 	}
+
+	// Backward traversal - start from ActiveNodes and go backwards
+	uint32_t BackwardCount = 0;
+	CurrentActiveNode = ActiveNodes;
+
+	// First, read the ActiveNodes entry to get its pPreviousEntry
+	CLinkedListEntry StartEntry{};
+	VMMDLL_Scatter_PrepareEx(vmsh, CurrentActiveNode, sizeof(CLinkedListEntry), reinterpret_cast<BYTE*>(&StartEntry), &BytesRead);
+	VMMDLL_Scatter_Execute(vmsh);
+	VMMDLL_Scatter_Clear(vmsh, Proc.GetPID(), 0);
+
+	if (BytesRead == sizeof(CLinkedListEntry) && StartEntry.pPreviousEntry != 0)
+	{
+		CurrentActiveNode = StartEntry.pPreviousEntry;
+
+		while (true)
+		{
+			if (BackwardCount >= MaxNodes)
+				break;
+
+			if (VisitedNodes.contains(CurrentActiveNode))
+				break;
+
+			if (CurrentActiveNode == LastActiveNode && BackwardCount > 5)
+				break;
+
+			CLinkedListEntry NodeEntry{};
+			VMMDLL_Scatter_PrepareEx(vmsh, CurrentActiveNode, sizeof(CLinkedListEntry), reinterpret_cast<BYTE*>(&NodeEntry), &BytesRead);
+			VMMDLL_Scatter_Execute(vmsh);
+			VMMDLL_Scatter_Clear(vmsh, Proc.GetPID(), 0);
+
+			if (BytesRead != sizeof(CLinkedListEntry))
+				break;
+
+			VisitedNodes.insert(CurrentActiveNode);
+			m_ObjectAddresses.push_back(NodeEntry.pObject);
+
+			if (NodeEntry.pPreviousEntry == FirstNode)
+				break;
+
+			if (NodeEntry.pPreviousEntry == 0)
+				break;
+
+			CurrentActiveNode = NodeEntry.pPreviousEntry;
+			BackwardCount++;
+		}
+	}
+
+	NodeCount = ForwardCount + BackwardCount;
+	VMMDLL_Scatter_CloseHandle(vmsh);
 
 	auto EndTime = std::chrono::high_resolution_clock::now();
 	auto Duration = std::chrono::duration_cast<std::chrono::milliseconds>(EndTime - StartTime).count();
-	std::println("[EFT] UpdateObjectList; {} nodes in {}ms", NodeCount, Duration);
+	std::println("[EFT] UpdateObjectList; {} total nodes in {}ms", NodeCount, Duration);
 }
 
 std::vector<uintptr_t> GOM::GetGameWorldAddresses(DMA_Connection* Conn)
