@@ -2,8 +2,6 @@
 #include "EFT.h"
 #include "Game/GOM/GOM.h"
 #include "Game/Camera/Camera.h"
-#include "Game/Loot List/Loot List.h"
-#include "Game/Exfil List/Exfil List.h"
 
 bool EFT::Initialize(DMA_Connection* Conn)
 {
@@ -11,21 +9,7 @@ bool EFT::Initialize(DMA_Connection* Conn)
 
 	Proc.GetProcessInfo(Conn);
 
-	try
-	{
-		GOM::Initialize(Conn);
-		m_CachedLocalWorldAddress = GOM::FindGameWorldAddressFromCache(Conn);
-
-		Camera::Initialize(Conn);
-		LootList::CompleteUpdate(Conn);
-		ExfilList::Initialize(Conn);
-	}
-	catch (const std::exception& e)
-	{
-		std::println("EFT Initialization failed: {}", e.what());
-		system("pause");
-		return false;
-	}
+	MakeNewGameWorld(Conn);
 
 	return true;
 }
@@ -35,7 +19,61 @@ const Process& EFT::GetProcess()
 	return Proc;
 }
 
-uintptr_t EFT::GetCachedWorldAddress()
+void EFT::MakeNewGameWorld(DMA_Connection* Conn)
 {
-	return m_CachedLocalWorldAddress;
+	try
+	{
+		GOM::Initialize(Conn);
+		pGameWorld = std::make_unique<CLocalGameWorld>(GOM::FindGameWorldAddressFromCache(Conn));
+		Camera::Initialize(Conn);
+	}
+	catch (const std::exception& e)
+	{
+		std::println("[EFT] Failed making new game world! {}", e.what());
+	}
+}
+
+void EFT::QuickUpdatePlayers(DMA_Connection* Conn)
+{
+	if (pGameWorld)
+		pGameWorld->QuickUpdatePlayers(Conn);
+}
+
+void EFT::HandlePlayerAllocations(DMA_Connection* Conn)
+{
+	if (pGameWorld)
+		pGameWorld->HandlePlayerAllocations(Conn);
+}
+
+CRegisteredPlayers& EFT::GetRegisteredPlayers()
+{
+	if (!pGameWorld)
+		throw std::runtime_error("EFT::pGameWorld is null");
+
+	if (!pGameWorld->m_pRegisteredPlayers)
+		throw std::runtime_error("EFT::pGameWorld->m_pRegisteredPlayers is null");
+
+	return *(pGameWorld->m_pRegisteredPlayers);
+}
+
+CLootList& EFT::GetLootList()
+{
+	if (!pGameWorld)
+		throw std::runtime_error("EFT::pGameWorld is null");
+
+	if (!pGameWorld->m_pLootList)
+		throw std::runtime_error("EFT::pGameWorld->m_pLootList is null");
+
+	return *(pGameWorld->m_pLootList);
+}
+
+CExfilController& EFT::GetExfilController()
+{
+	if (!pGameWorld)
+		throw std::runtime_error("EFT::pGameWorld is null");
+
+	if (!pGameWorld->m_pExfilController)
+		throw std::runtime_error("EFT::pGameWorld->m_pRegisteredExfils is null");
+
+	return *(pGameWorld->m_pExfilController);
 }

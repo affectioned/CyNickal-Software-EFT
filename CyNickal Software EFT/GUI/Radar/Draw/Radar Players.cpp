@@ -2,20 +2,22 @@
 #include "Radar Players.h"
 #include "GUI/Radar/Radar.h"
 #include "GUI/Color Picker/Color Picker.h"
-#include "Game/Player List/Player List.h"
+#include "Game/EFT.h"
 
 void DrawRadarPlayers::DrawAll(const ImVec2& WindowPos, const ImVec2& WindowSize, ImDrawList* DrawList)
 {
-	auto LocalPos = PlayerList::GetLocalPlayerPosition();
+	auto& PlayerList = EFT::GetRegisteredPlayers();
+	
+	auto LocalPos = PlayerList.GetLocalPlayerPosition();
 
-	std::scoped_lock lk(PlayerList::m_PlayerMutex);
+	std::scoped_lock lk(PlayerList.m_Mut);
 
-	if (PlayerList::m_Players.empty())
+	if (PlayerList.m_Players.empty())
 		return;
 
 	auto CenterScreen = ImVec2(WindowPos.x + (WindowSize.x / 2), WindowPos.y + (WindowSize.y / 2));
 
-	for (auto& Player : PlayerList::m_Players)
+	for (auto& Player : PlayerList.m_Players)
 	{
 		std::visit([CenterScreen, DrawList, LocalPos](auto& Player) {
 			Draw(Player, CenterScreen, LocalPos, DrawList);

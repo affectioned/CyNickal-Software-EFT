@@ -1,21 +1,21 @@
-#include "pch.h"
-
-#include "Exfil List.h"
+#include "pch.h"	
+#include "CExfilController.h"
 #include "Game/EFT.h"
 #include "Game/Offsets/Offsets.h"
 
-void ExfilList::Initialize(DMA_Connection* Conn)
+CExfilController::CExfilController(uintptr_t ExfilControllersAddress) : CBaseEntity(ExfilControllersAddress)
 {
-	auto LocalGameWorld = EFT::GetCachedWorldAddress();
+	std::println("[CExfilController] Constructed with {0:X}", m_EntityAddress);
 
+	auto Conn = DMA_Connection::GetInstance();
+	Initialize(Conn);
+}
+
+void CExfilController::Initialize(DMA_Connection* Conn)
+{
 	auto& Proc = EFT::GetProcess();
 
-	uintptr_t ExfiltrationController = Proc.ReadMem<uintptr_t>(Conn, LocalGameWorld + Offsets::CLocalGameWorld::pExfiltrationController);
-
-	if (!ExfiltrationController)
-		throw std::runtime_error("Failed to get Exfiltration Controller");
-
-	uintptr_t ExfilList = Proc.ReadMem<uintptr_t>(Conn, ExfiltrationController + Offsets::CExfiltrationController::pExfiltrationPoints);
+	uintptr_t ExfilList = Proc.ReadMem<uintptr_t>(Conn, m_EntityAddress + Offsets::CExfiltrationController::pExfiltrationPoints);
 
 	if (!ExfilList)
 		throw std::runtime_error("Failed to get Exfiltration Points List");
@@ -43,7 +43,7 @@ void ExfilList::Initialize(DMA_Connection* Conn)
 	FullUpdate(Conn);
 }
 
-void ExfilList::FullUpdate(DMA_Connection* Conn)
+void CExfilController::FullUpdate(DMA_Connection* Conn)
 {
 	std::scoped_lock Lock(m_ExfilMutex);
 

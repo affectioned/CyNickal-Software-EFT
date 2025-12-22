@@ -1,10 +1,14 @@
 #include "pch.h"
-#include "Player List.h"
+#include "CRegisteredPlayers.h"
 #include "Game/EFT.h"
 #include "Game/Offsets/Offsets.h"
-#include <algorithm>
 
-void PlayerList::ExecuteReadsOnPlayerVec(DMA_Connection* Conn, std::vector<Player>& Players)
+CRegisteredPlayers::CRegisteredPlayers(uintptr_t RegisteredPlayersAddress) : CBaseEntity(RegisteredPlayersAddress)
+{
+	std::println("[CRegisteredPlayers] Constructed CRegisteredPlayers with 0x{:X}", RegisteredPlayersAddress);
+}
+
+void CRegisteredPlayers::ExecuteReadsOnPlayerVec(DMA_Connection* Conn, std::vector<Player>& Players)
 {
 	const auto PID = EFT::GetProcess().GetPID();
 
@@ -86,7 +90,7 @@ void PlayerList::ExecuteReadsOnPlayerVec(DMA_Connection* Conn, std::vector<Playe
 		std::visit([](auto& p) { p.Finalize(); }, Player);
 }
 
-void PlayerList::AddPlayersToCache(std::vector<uintptr_t>& Addresses, EPlayerType PlayerType)
+void CRegisteredPlayers::AddPlayersToCache(std::vector<uintptr_t>& Addresses, EPlayerType PlayerType)
 {
 	if (PlayerType == EPlayerType::eMainPlayer)
 	{
@@ -104,7 +108,7 @@ void PlayerList::AddPlayersToCache(std::vector<uintptr_t>& Addresses, EPlayerTyp
 	}
 }
 
-void PlayerList::RemoveAddressesFromCache(std::vector<uintptr_t>& Addresses, EPlayerType playerType)
+void CRegisteredPlayers::RemoveAddressesFromCache(std::vector<uintptr_t>& Addresses, EPlayerType playerType)
 {
 	if (playerType == EPlayerType::eMainPlayer)
 	{
@@ -132,9 +136,9 @@ void PlayerList::RemoveAddressesFromCache(std::vector<uintptr_t>& Addresses, EPl
 	}
 }
 
-void PlayerList::QuickUpdate(DMA_Connection* Conn)
+void CRegisteredPlayers::QuickUpdate(DMA_Connection* Conn)
 {
-	std::scoped_lock Lock(m_PlayerMutex);
+	std::scoped_lock Lock(m_Mut);
 
 	auto vmsh = VMMDLL_Scatter_Initialize(Conn->GetHandle(), EFT::GetProcess().GetPID(), VMMDLL_FLAG_NOCACHE);
 
@@ -149,36 +153,24 @@ void PlayerList::QuickUpdate(DMA_Connection* Conn)
 	VMMDLL_Scatter_CloseHandle(vmsh);
 }
 
-void PlayerList::FullUpdate(DMA_Connection* Conn)
+void CRegisteredPlayers::FullUpdate(DMA_Connection* Conn)
 {
 	std::println("[PlayerList] Full update requested.");
 
 	Conn->LightRefresh();
 
-	std::scoped_lock Lock(m_PlayerMutex);
+	std::scoped_lock Lock(m_Mut);
 	ExecuteReadsOnPlayerVec(Conn, m_Players);
 }
 
-void PlayerList::UpdateBaseAddresses(DMA_Connection* Conn, uintptr_t LocalGameWorld)
+void CRegisteredPlayers::UpdateBaseAddresses(DMA_Connection* Conn)
 {
-	if (!LocalGameWorld)
-	{
-		m_RegisteredPlayersBaseAddress = 0x0;
-		m_PlayerDataBaseAddress = 0x0;
-		m_NumPlayers = 0;
-		return;
-	}
-
-	uintptr_t PlayerListAddress = LocalGameWorld + Offsets::CLocalGameWorld::pRegisteredPlayers;
-
 	auto& Proc = EFT::GetProcess();
 
-	m_RegisteredPlayersBaseAddress = Proc.ReadMem<uintptr_t>(Conn, PlayerListAddress);
+	m_PlayerDataBaseAddress = Proc.ReadMem<uintptr_t>(Conn, m_EntityAddress + Offsets::CRegisteredPlayers::pPlayerArray);
 
-	m_PlayerDataBaseAddress = Proc.ReadMem<uintptr_t>(Conn, m_RegisteredPlayersBaseAddress + Offsets::CRegisteredPlayers::pPlayerArray);
-
-	uintptr_t NumPlayersAddress = m_RegisteredPlayersBaseAddress + Offsets::CRegisteredPlayers::NumPlayers;
-	uintptr_t MaxPlayersAddress = m_RegisteredPlayersBaseAddress + Offsets::CRegisteredPlayers::MaxPlayers;
+	uintptr_t NumPlayersAddress = m_EntityAddress + Offsets::CRegisteredPlayers::NumPlayers;
+	uintptr_t MaxPlayersAddress = m_EntityAddress + Offsets::CRegisteredPlayers::MaxPlayers;
 
 	m_NumPlayers = Proc.ReadMem<uint32_t>(Conn, NumPlayersAddress);
 }
@@ -197,7 +189,7 @@ struct NameInfo
 };
 std::vector<NameInfo> ObjectNames{};
 std::unordered_map<uintptr_t, std::string> NameMap{};
-void PlayerList::GetPlayerAddresses(DMA_Connection* Conn, std::vector<uintptr_t>& OutClientPlayers, std::vector<uintptr_t>& OutObservedPlayers)
+void CRegisteredPlayers::GetPlayerAddresses(DMA_Connection* Conn, std::vector<uintptr_t>& OutClientPlayers, std::vector<uintptr_t>& OutObservedPlayers)
 {
 	OutClientPlayers.clear();
 	OutObservedPlayers.clear();
@@ -281,9 +273,9 @@ void PlayerList::GetPlayerAddresses(DMA_Connection* Conn, std::vector<uintptr_t>
 	}
 }
 
-Vector3 PlayerList::GetLocalPlayerPosition()
+Vector3 CRegisteredPlayers::GetLocalPlayerPosition()
 {
-	std::scoped_lock Lock(m_PlayerMutex);
+	std::scoped_lock Lock(m_Mut);
 
 	CClientPlayer* pLocal = GetLocalPlayer();
 	if (!pLocal)
@@ -294,9 +286,9 @@ Vector3 PlayerList::GetLocalPlayerPosition()
 	return pLocal->GetBonePosition(EBoneIndex::Root);
 }
 
-Vector3 PlayerList::GetPlayerBonePosition(uintptr_t m_EntityAddress, EBoneIndex BoneIndex)
+Vector3 CRegisteredPlayers::GetPlayerBonePosition(uintptr_t m_EntityAddress, EBoneIndex BoneIndex)
 {
-	std::scoped_lock Lock(m_PlayerMutex);
+	std::scoped_lock Lock(m_Mut);
 
 	Vector3 ReturnPosition{};
 	bool bFound{ false };
@@ -317,7 +309,7 @@ Vector3 PlayerList::GetPlayerBonePosition(uintptr_t m_EntityAddress, EBoneIndex 
 	return ReturnPosition;
 }
 
-CClientPlayer* PlayerList::GetLocalPlayer()
+CClientPlayer* CRegisteredPlayers::GetLocalPlayer()
 {
 	bool bFound{ false };
 	CClientPlayer* pClientPlayer{ nullptr };
@@ -342,7 +334,7 @@ CClientPlayer* PlayerList::GetLocalPlayer()
 	return pClientPlayer;
 }
 
-void PlayerList::AllocatePlayersFromVector(DMA_Connection* Conn, std::vector<uintptr_t> PlayerAddresses, EPlayerType playerType)
+void CRegisteredPlayers::AllocatePlayersFromVector(DMA_Connection* Conn, std::vector<uintptr_t> PlayerAddresses, EPlayerType playerType)
 {
 	std::println("[PlayerList] Allocating {} players of type {}", PlayerAddresses.size(),
 		(playerType == EPlayerType::eMainPlayer) ? "ClientPlayer" : "ObservedPlayer");
@@ -359,7 +351,7 @@ void PlayerList::AllocatePlayersFromVector(DMA_Connection* Conn, std::vector<uin
 
 	ExecuteReadsOnPlayerVec(Conn, m_LocalCopy);
 
-	std::scoped_lock Lock(m_PlayerMutex);
+	std::scoped_lock Lock(m_Mut);
 	m_Players.insert(m_Players.end(),
 		std::make_move_iterator(m_LocalCopy.begin()),
 		std::make_move_iterator(m_LocalCopy.end()));
@@ -367,9 +359,9 @@ void PlayerList::AllocatePlayersFromVector(DMA_Connection* Conn, std::vector<uin
 	AddPlayersToCache(PlayerAddresses, playerType);
 }
 
-void PlayerList::DeallocatePlayersFromVector(std::vector<uintptr_t> PlayerAddresses, EPlayerType playerType)
+void CRegisteredPlayers::DeallocatePlayersFromVector(std::vector<uintptr_t> PlayerAddresses, EPlayerType playerType)
 {
-	std::scoped_lock Lock(m_PlayerMutex);
+	std::scoped_lock Lock(m_Mut);
 	for (auto& Addr : PlayerAddresses)
 	{
 		auto it = std::find_if(m_Players.begin(), m_Players.end(), [Addr](const Player& p) {
@@ -394,7 +386,7 @@ std::vector<uintptr_t> OutdatedClients{};
 std::vector<uintptr_t> OutdatedObservers{};
 std::vector<uintptr_t> All_ClientPlayers{};
 std::vector<uintptr_t> All_ObservedPlayers{};
-void PlayerList::HandlePlayerAllocations(DMA_Connection* Conn)
+void CRegisteredPlayers::HandlePlayerAllocations(DMA_Connection* Conn)
 {
 	GetPlayerAddresses(Conn, All_ClientPlayers, All_ObservedPlayers);
 

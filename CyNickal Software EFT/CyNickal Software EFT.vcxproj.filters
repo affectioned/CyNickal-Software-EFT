@@ -57,9 +57,6 @@
     <ClCompile Include="Game\Classes\CLinkedListEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Player List\Player List.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Game\GOM\GOM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -108,9 +105,6 @@
     <ClCompile Include="Game\Classes\CPlayerSkeleton\CPlayerSkeleton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Loot List\Loot List.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Fuser\Draw\Loot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -144,9 +138,6 @@
     <ClCompile Include="GUI\Keybinds\Keybinds.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Exfil List\Exfil List.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Classes\CExfilPoint\CExfilPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -175,6 +166,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game\Classes\CBaseLootItem\CBaseLootItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Classes\CLocalGameWorld\CLocalGameWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Classes\CLootList\CLootList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Classes\CRegisteredPlayers\CRegisteredPlayers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Classes\CExfilController\CExfilController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -234,9 +237,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Classes\Vector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Player List\Player List.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Offsets\Offsets.h">
@@ -302,9 +302,6 @@
     <ClInclude Include="Game\Enums\EPlayerSide.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Loot List\Loot List.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GUI\Fuser\Draw\Loot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -341,9 +338,6 @@
     <ClInclude Include="GUI\Keybinds\Keybinds.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Exfil List\Exfil List.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Game\Classes\CExfilPoint\CExfilPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -375,6 +369,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Classes\CBaseLootItem\CBaseLootItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Classes\CLocalGameWorld\CLocalGameWorld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Classes\CLootList\CLootList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Classes\CLootList\CGenericLootList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Classes\CRegisteredPlayers\CRegisteredPlayers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Classes\CExfilController\CExfilController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

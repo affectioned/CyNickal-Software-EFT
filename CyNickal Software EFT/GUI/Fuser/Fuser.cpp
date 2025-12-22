@@ -5,10 +5,14 @@
 #include "Draw/Exfils.h"
 #include "GUI/Aimbot/Aimbot.h"
 #include "Overlays/Ammo Count/Ammo Count.h"
+#include "Game/EFT.h"
 
 void Fuser::Render()
 {
 	if (!bMasterToggle) return;
+
+	if (!EFT::pGameWorld)
+		return;
 
 	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(Fuser::m_ScreenSize);
@@ -18,9 +22,15 @@ void Fuser::Render()
 	auto DrawList = ImGui::GetWindowDrawList();
 
 	Aimbot::RenderFOVCircle(WindowPos, DrawList);
-	DrawESPLoot::DrawAll(WindowPos, DrawList);
+
+	if (EFT::pGameWorld->m_pLootList)
+		DrawESPLoot::DrawAll(WindowPos, DrawList);
+
 	DrawExfils::DrawAll(WindowPos, DrawList);
-	DrawESPPlayers::DrawAll(WindowPos, DrawList);
+
+	if (EFT::pGameWorld->m_pRegisteredPlayers)
+		DrawESPPlayers::DrawAll(WindowPos, DrawList);
+
 	AmmoCountOverlay::Render();
 
 	ImGui::End();

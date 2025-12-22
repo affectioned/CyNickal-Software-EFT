@@ -1,19 +1,21 @@
 #include "pch.h"
 #include "Players.h"
-#include "Game/Player List/Player List.h"
 #include "Game/Camera/Camera.h"
 #include "Game/Enums/EBoneIndex.h"
 #include "GUI/Color Picker/Color Picker.h"
+#include "Game/EFT.h"
 
 void DrawESPPlayers::DrawAll(const ImVec2& WindowPos, ImDrawList* DrawList)
 {
-	m_LatestLocalPlayerPos = PlayerList::GetLocalPlayerPosition();
+	auto& PlayerList = EFT::GetRegisteredPlayers();
 
-	std::scoped_lock lk(PlayerList::m_PlayerMutex);
+	m_LatestLocalPlayerPos = PlayerList.GetLocalPlayerPosition();
 
-	if (PlayerList::m_Players.empty()) return;
+	std::scoped_lock lk(PlayerList.m_Mut);
 
-	for (auto& Player : PlayerList::m_Players)
+	if (PlayerList.m_Players.empty()) return;
+
+	for (auto& Player : PlayerList.m_Players)
 		std::visit([WindowPos, DrawList](auto& Player) { DrawESPPlayers::Draw(Player, WindowPos, DrawList); }, Player);
 }
 

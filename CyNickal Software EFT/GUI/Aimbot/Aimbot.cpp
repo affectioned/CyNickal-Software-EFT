@@ -1,10 +1,10 @@
 #include "pch.h"
 #include "Aimbot.h"
 #include "DMA/Input Manager.h"
-#include "Game/Player List/Player List.h"
 #include "Game/Camera/Camera.h"
 #include "GUI/Fuser/Fuser.h"
 #include "GUI/Keybinds/Keybinds.h"	
+#include "Game/EFT.h"
 
 void Aimbot::RenderSettings()
 {
@@ -63,10 +63,11 @@ void Aimbot::OnDMAFrame(DMA_Connection* Conn)
 	if (c_keys::IsKeyDown(Conn, m_Keybind) == false) return;
 
 	auto BestTarget = Aimbot::FindBestTarget();
+	auto& RegisteredPlayers = EFT::GetRegisteredPlayers();
 
 	do
 	{
-		PlayerList::QuickUpdate(Conn);
+		RegisteredPlayers.QuickUpdate(Conn);
 		Camera::QuickUpdateViewMatrix(Conn);
 
 		auto Delta = GetAimDeltaToTarget(BestTarget);
@@ -93,7 +94,7 @@ ImVec2 Aimbot::GetAimDeltaToTarget(uintptr_t TargetAddress)
 
 	auto CenterScreen = Fuser::GetCenterScreen();
 
-	auto TargetWorldPos = PlayerList::GetPlayerBonePosition(TargetAddress, EBoneIndex::Head);
+	auto TargetWorldPos = EFT::GetRegisteredPlayers().GetPlayerBonePosition(TargetAddress, EBoneIndex::Head);
 
 	Vector2 ScreenPos{};
 	if (!Camera::WorldToScreen(TargetWorldPos, ScreenPos)) return Return;
@@ -111,13 +112,15 @@ ImVec2 Aimbot::GetAimDeltaToTarget(uintptr_t TargetAddress)
 
 uintptr_t Aimbot::FindBestTarget()
 {
-	std::scoped_lock lk(PlayerList::m_PlayerMutex);
+	auto& PlayerList = EFT::GetRegisteredPlayers();
+
+	std::scoped_lock lk(PlayerList.m_Mut);
 
 	auto Center = Fuser::GetCenterScreen();
 	uintptr_t BestTarget = 0;
 	float BestDistance = std::numeric_limits<float>::max();
 
-	for (auto& Player : PlayerList::m_Players)
+	for (auto& Player : PlayerList.m_Players)
 	{
 		std::visit([&](auto& Player) {
 

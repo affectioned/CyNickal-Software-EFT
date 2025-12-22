@@ -1,9 +1,18 @@
 #include "pch.h"
-#include "Loot List.h"
+#include "CLootList.h"
 #include "Game/Offsets/Offsets.h"
-#include "Game/EFT.h"
 
-void LootList::CompleteUpdate(DMA_Connection* Conn)
+CLootList::CLootList(uintptr_t LootListAddress) : CBaseEntity(LootListAddress)
+{
+	std::println("[CLootList] Constructed CLootList with 0x{:X}", LootListAddress);
+
+	auto Conn = DMA_Connection::GetInstance();
+	CompleteUpdate(Conn);
+
+	std::println("[CLootList] CLootList initialized with {} items and {} containers.", m_ObservedItems.m_EntityAddresses.size(), m_LootableContainers.m_EntityAddresses.size());
+}
+
+void CLootList::CompleteUpdate(DMA_Connection* Conn)
 {
 	GetAndSortEntityAddresses(Conn);
 
@@ -30,16 +39,12 @@ std::vector<uintptr_t> DerefPointerVec(DMA_Connection* Conn, std::vector<uintptr
 	return Return;
 }
 
-std::vector<uintptr_t> ObjectClassAddr{};
-void LootList::GetAndSortEntityAddresses(DMA_Connection* Conn)
+void CLootList::GetAndSortEntityAddresses(DMA_Connection* Conn)
 {
-	auto LocalGameWorld = EFT::GetCachedWorldAddress();
 	auto& Proc = EFT::GetProcess();
 
-	m_pLootListAddress = Proc.ReadMem<uintptr_t>(Conn, LocalGameWorld + Offsets::CLocalGameWorld::pLootList);
-
-	m_BaseLootListAddress = Proc.ReadMem<uintptr_t>(Conn, m_pLootListAddress + 0x10);
-	m_LootNum = Proc.ReadMem<uint32_t>(Conn, m_pLootListAddress + 0x18);
+	m_BaseLootListAddress = Proc.ReadMem<uintptr_t>(Conn, m_EntityAddress + 0x10);
+	m_LootNum = Proc.ReadMem<uint32_t>(Conn, m_EntityAddress + 0x18);
 	m_UnsortedAddresses = Proc.ReadVec<uintptr_t>(Conn, m_BaseLootListAddress + 0x20, m_LootNum);
 
 	if (ObjectTypeAddressCache.empty())
@@ -63,10 +68,10 @@ void LootList::GetAndSortEntityAddresses(DMA_Connection* Conn)
 			m_LootableContainers.m_EntityAddresses.push_back(m_UnsortedAddresses[Index]);
 	}
 
-	std::println("[Loot List] Found {} ObservedLootItems and {} LootableContainers", m_ObservedItems.m_EntityAddresses.size(), m_LootableContainers.m_EntityAddresses.size());
+	std::println("[CLootList] Found {} ObservedLootItems and {} LootableContainers", m_ObservedItems.m_EntityAddresses.size(), m_LootableContainers.m_EntityAddresses.size());
 }
 
-void LootList::PopulateTypeAddressCache(DMA_Connection* Conn)
+void CLootList::PopulateTypeAddressCache(DMA_Connection* Conn)
 {
 	ObjectTypeAddressCache.clear();
 
@@ -90,6 +95,6 @@ void LootList::PopulateTypeAddressCache(DMA_Connection* Conn)
 		TypeNameBuffers[Index] = Proc.ReadMem<std::array<char, 64>>(Conn, NameAddr);
 		std::string TypeNameStr = std::string(TypeNameBuffers[Index].begin(), TypeNameBuffers[Index].end());
 		ObjectTypeAddressCache[TypeNameStr.c_str()] = Addr;
-		std::println("[Loot List] Cached Type: {0} at {1:X}", TypeNameStr.c_str(), Addr);
+		std::println("[CLootList] Cached Type: {0} at {1:X}", TypeNameStr.c_str(), Addr);
 	}
 }

@@ -1,11 +1,13 @@
 #include "pch.h"
 #include "GUI/Item Table/Item Table.h"
-#include "Game/Loot List/Loot List.h"
-#include "Game/Player List/Player List.h"
+#include "Game/EFT.h"
 
 void ItemTable::Render()
 {
 	if (!bMasterToggle)	return;
+
+	if (!EFT::pGameWorld || !EFT::pGameWorld->m_pLootList || !EFT::pGameWorld->m_pRegisteredPlayers)
+		return;
 
 	ImGui::Begin("Item Table", &bMasterToggle);
 
@@ -25,10 +27,11 @@ void ItemTable::Render()
 		ImGui::TableSetupColumn("Stack Count");
 		ImGui::TableHeadersRow();
 
-		auto LocalPlayerPos = PlayerList::GetLocalPlayerPosition();
+		auto LocalPlayerPos = EFT::GetRegisteredPlayers().GetLocalPlayerPosition();
+		auto& LootList = EFT::GetLootList();
 
-		std::scoped_lock lk(LootList::m_ObservedItems.m_Mut);
-		for (auto& Item : LootList::m_ObservedItems.m_Entities)
+		std::scoped_lock lk(LootList.m_ObservedItems.m_Mut);
+		for (auto& Item : LootList.m_ObservedItems.m_Entities)
 			AddRow(Item, LocalPlayerPos);
 
 		ImGui::EndTable();

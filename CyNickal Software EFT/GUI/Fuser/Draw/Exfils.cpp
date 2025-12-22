@@ -1,21 +1,24 @@
 #include "pch.h"
 #include "Exfils.h"
-#include "Game/Exfil List/Exfil List.h"
-#include "Game/Player List/Player List.h"
 #include "Game/Camera/Camera.h"
 #include "GUI/Color Picker/Color Picker.h"
+#include "Game/EFT.h"
 
 void DrawExfils::DrawAll(const ImVec2& WindowPos, ImDrawList* DrawList)
 {
 	if (!bMasterToggle) return;
 
-	std::scoped_lock lk(ExfilList::m_ExfilMutex);
+	if (EFT::pGameWorld == nullptr) return;
+	if (EFT::pGameWorld->m_pExfilController == nullptr) return;
+
+	auto& ExfilController = EFT::GetExfilController();
+	std::scoped_lock lk(ExfilController.m_ExfilMutex);
 
 	Vector2 ScreenPos{};
 
-	auto LocalPlayerPos = PlayerList::GetLocalPlayerPosition();
+	auto LocalPlayerPos = EFT::GetRegisteredPlayers().GetLocalPlayerPosition();
 
-	for (auto& Exfil : ExfilList::m_Exfils)
+	for (auto& Exfil : ExfilController.m_Exfils)
 	{
 		if (!Camera::WorldToScreen(Exfil.m_Position, ScreenPos)) continue;
 

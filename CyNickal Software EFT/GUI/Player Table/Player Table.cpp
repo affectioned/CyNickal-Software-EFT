@@ -1,10 +1,13 @@
 #include "pch.h"
 #include "Player Table.h"
-#include "Game/Player List/Player List.h"
+#include "Game/EFT.h"
 
 void PlayerTable::Render()
 {
 	if (!bMasterToggle)
+		return;
+
+	if (!EFT::pGameWorld || !EFT::pGameWorld->m_pRegisteredPlayers)
 		return;
 
 	ImGui::Begin("Player Table", &bMasterToggle);
@@ -26,8 +29,9 @@ void PlayerTable::Render()
 		ImGui::TableSetupColumn("Ammo");
 		ImGui::TableHeadersRow();
 
-		std::scoped_lock Lock(PlayerList::m_PlayerMutex);
-		for (auto& Player : PlayerList::m_Players)
+		auto& PlayerList = EFT::GetRegisteredPlayers();
+		std::scoped_lock Lock(PlayerList.m_Mut);
+		for (auto& Player : PlayerList.m_Players)
 			std::visit([](auto& Player) { PlayerTable::AddRow(Player); }, Player);
 
 		ImGui::EndTable();

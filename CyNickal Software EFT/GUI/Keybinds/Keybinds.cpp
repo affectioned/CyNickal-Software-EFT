@@ -1,8 +1,9 @@
 #include "pch.h"
 #include "Keybinds.h"
 #include "DMA/Input Manager.h"
-#include "Game/Player List/Player List.h"
 #include "GUI/Aimbot/Aimbot.h"
+#include "Game/EFT.h"
+#include "Game/GOM/GOM.h"
 
 const char* CKeybind::GetKeyName(uint32_t vkCode)
 {
@@ -161,7 +162,7 @@ void Keybinds::OnDMAFrame(DMA_Connection* Conn)
 		Conn->FullRefresh();
 
 	if (PlayerRefresh.IsActive(Conn))
-		PlayerList::FullUpdate(Conn);
+		EFT::GetRegisteredPlayers().FullUpdate(Conn);
 
 	if (Aimbot.IsActive(Conn))
 		Aimbot::OnDMAFrame(Conn);

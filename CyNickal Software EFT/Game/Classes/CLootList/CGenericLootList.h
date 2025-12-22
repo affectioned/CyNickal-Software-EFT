@@ -1,15 +1,13 @@
 #pragma once
-#include "DMA/DMA.h"
-#include "Game/Classes/CObservedLootItem/CObservedLootItem.h"
-#include "Game/Classes/CLootableContainer/CLootableContainer.h"
 #include "Game/EFT.h"
 
+class EFT;
 template <typename T>
-class GenericList
+class CGenericLootList
 {
 public:
 	std::mutex m_Mut{};
-	std::vector<T> m_Entities{};
+	std::vector<typename T> m_Entities{};
 	std::vector<uintptr_t> m_EntityAddresses{};
 
 public:
@@ -25,7 +23,8 @@ public:
 	}
 	void ExecuteFullReads(DMA_Connection* Conn)
 	{
-		auto ProcID = EFT::GetProcess().GetPID();
+		auto& Proc = EFT::GetProcess();
+		auto ProcID = Proc.GetPID();
 
 		auto vmsh = VMMDLL_Scatter_Initialize(Conn->GetHandle(), ProcID, VMMDLL_FLAG_NOCACHE);
 		for (auto& Ent : m_Entities)
@@ -71,23 +70,4 @@ public:
 		for (auto& Ent : m_Entities)
 			Ent.Finalize();
 	}
-};
-
-class LootList
-{
-public:
-	static inline GenericList<CLootableContainer> m_LootableContainers{};
-	static inline GenericList<CObservedLootItem> m_ObservedItems{};
-
-public:
-	static void CompleteUpdate(DMA_Connection* Conn);
-
-private:
-	static void GetAndSortEntityAddresses(DMA_Connection* Conn);
-	static void PopulateTypeAddressCache(DMA_Connection* Conn);
-	static inline std::unordered_map<std::string, uintptr_t> ObjectTypeAddressCache{};
-	static inline std::vector<uintptr_t> m_UnsortedAddresses{};
-	static inline uintptr_t m_pLootListAddress{ 0 };
-	static inline uintptr_t m_BaseLootListAddress{ 0 };
-	static inline uint32_t m_LootNum{ 0 };
 };

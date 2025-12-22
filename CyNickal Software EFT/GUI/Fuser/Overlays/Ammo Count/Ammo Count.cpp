@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Ammo Count.h"
-#include "Game/Player List/Player List.h"
+
+#include "Game/EFT.h"
 
 struct MagazineInfo
 {
@@ -13,8 +14,9 @@ MagazineInfo GetLocalPlayerMagazine()
 {
 	MagazineInfo info{};
 
-	std::scoped_lock Lock(PlayerList::m_PlayerMutex);
-	auto LocalPlayer = PlayerList::GetLocalPlayer();
+	auto& PlayerList = EFT::GetRegisteredPlayers();
+	std::scoped_lock Lock(PlayerList.m_Mut);
+	auto LocalPlayer = PlayerList.GetLocalPlayer();
 
 	if (!LocalPlayer || LocalPlayer->IsInvalid() || !LocalPlayer->m_pHands)
 		return info;

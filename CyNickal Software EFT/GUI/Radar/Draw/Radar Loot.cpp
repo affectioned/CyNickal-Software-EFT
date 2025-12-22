@@ -1,17 +1,17 @@
 #include "pch.h"
 
 #include "Radar Loot.h"
-
 #include "GUI/Radar/Radar.h"
-#include "Game/Loot List/Loot List.h"
-#include "Game/Player List/Player List.h"
+
+
 #include "GUI/Color Picker/Color Picker.h"
+#include "Game/EFT.h"
 
 void DrawRadarLoot::DrawAll(const ImVec2& WindowPos, const ImVec2& WindowSize, ImDrawList* DrawList)
 {
 	if (!bMasterToggle) return;
 
-	auto LocalPlayerPos = PlayerList::GetLocalPlayerPosition();
+	auto LocalPlayerPos = EFT::GetRegisteredPlayers().GetLocalPlayerPosition();
 	auto CenterPos = ImVec2(WindowPos.x + (WindowSize.x / 2.0f), WindowPos.y + (WindowSize.y / 2.0f));
 
 	DrawAllContainers(CenterPos, DrawList, LocalPlayerPos);
@@ -38,15 +38,17 @@ void DrawDotAtPosition(const ImVec2& DotPos, ImDrawList* DrawList, const ImU32& 
 
 void DrawRadarLoot::DrawAllContainers(const ImVec2& CenterPos, ImDrawList* DrawList, const Vector3& LocalPlayerPos)
 {
-	std::scoped_lock lk(LootList::m_LootableContainers.m_Mut);
-	for (auto& Container : LootList::m_LootableContainers.m_Entities)
+	auto& LootList = EFT::GetLootList();
+	std::scoped_lock lk(LootList.m_LootableContainers.m_Mut);
+	for (auto& Container : LootList.m_LootableContainers.m_Entities)
 		DrawContainer(Container, CenterPos, DrawList, LocalPlayerPos);
 }
 
 void DrawRadarLoot::DrawAllItems(const ImVec2& CenterPos, ImDrawList* DrawList, const Vector3& LocalPlayerPos)
 {
-	std::scoped_lock lk(LootList::m_ObservedItems.m_Mut);
-	for (auto& Loot : LootList::m_ObservedItems.m_Entities)
+	auto& LootList = EFT::GetLootList();
+	std::scoped_lock lk(LootList.m_ObservedItems.m_Mut);
+	for (auto& Loot : LootList.m_ObservedItems.m_Entities)
 		DrawItem(Loot, CenterPos, DrawList, LocalPlayerPos);
 }
 
