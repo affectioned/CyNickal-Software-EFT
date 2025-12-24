@@ -26,6 +26,10 @@ struct CMousePos
 	{
 		return CMousePos{ x + rhs.x, y + rhs.y };
 	}
+	const CMousePos operator+(CMousePos rhs) const
+	{
+		return CMousePos{ x + rhs.x, y + rhs.y };
+	}
 };
 
 class FleaBot
@@ -43,6 +47,7 @@ private:
 	static EResponseType IdentifyResponse(const nlohmann::json& ResponseJson);
 	static void PrintOffers(const nlohmann::json& ResponseJson);
 	static void BuyFirstItemStack(CMousePos StartingPos);
+	static void ReturnToMainMenuAndWait(CMousePos StartingPos, std::chrono::seconds Delay);
 
 public:
 	static inline bool bMasterToggle{ false };

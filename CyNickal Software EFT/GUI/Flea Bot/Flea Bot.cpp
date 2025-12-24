@@ -167,57 +167,87 @@ void FleaBot::PrintOffers(const nlohmann::json& ResponseJson)
 	}
 }
 
+namespace SimpleInput
+{
+	namespace Positions
+	{
+		const CMousePos RefreshButton{ 1840,120 };
+		const CMousePos PurchaseButton{ 1775,180 };
+		const CMousePos AllButton{ 1150,490 };
+		const CMousePos YesButton{ 865,605 };
+		const CMousePos OkButton{ 960,580 };
+		const CMousePos MainMenuButton{ 80,1065 };
+		const CMousePos FleaMarketButton{ 1230,1065 };
+		const CMousePos BuildingMaterialsTab{ 560,240 };
+	}
+
+	void Click()
+	{
+		MyMakcu::m_Device.mouseDown(makcu::MouseButton::LEFT);
+		std::this_thread::sleep_for(10ms);
+		MyMakcu::m_Device.mouseUp(makcu::MouseButton::LEFT);
+	}
+	void ClickThenWait(std::chrono::milliseconds delay)
+	{
+		Click();
+		std::this_thread::sleep_for(delay);
+	}
+	CMousePos MoveTo(CMousePos StartingPos, CMousePos DesiredPos)
+	{
+		auto Delta = DesiredPos - StartingPos;
+		MyMakcu::m_Device.mouseMove(Delta.x, Delta.y);
+		return DesiredPos;
+	}
+	CMousePos MoveToThenClick(CMousePos StartingPos, CMousePos DesiredPos, std::chrono::milliseconds delay)
+	{
+		auto CurPos = MoveTo(StartingPos, DesiredPos);
+		std::this_thread::sleep_for(delay);
+		Click();
+		std::this_thread::sleep_for(10ms);
+		return CurPos;
+	}
+	CMousePos MoveToThenWait(CMousePos StartingPos, CMousePos DesiredPos, std::chrono::milliseconds delay)
+	{
+		auto CurPos = MoveTo(StartingPos, DesiredPos);
+		std::this_thread::sleep_for(delay);
+		return CurPos;
+	}
+	CMousePos MoveToRefreshButton(CMousePos StartingPos)
+	{
+		return MoveTo(StartingPos, Positions::RefreshButton);
+	}
+}
 const auto ShortDelay = 50ms;
 const auto MediumDelay = std::chrono::milliseconds(500);
 const auto LongDelay = std::chrono::seconds(2);
-void ClickThenWait(std::chrono::milliseconds delay)
-{
-	MyMakcu::m_Device.mouseDown(makcu::MouseButton::LEFT);
-	std::this_thread::sleep_for(10ms);
-	MyMakcu::m_Device.mouseUp(makcu::MouseButton::LEFT);
-	std::this_thread::sleep_for(delay);
-}
-CMousePos MoveThenWait(CMousePos PreviousPos, CMousePos Delta, std::chrono::milliseconds delay)
-{
-	auto FinalPos = PreviousPos + Delta;
-	MyMakcu::m_Device.mouseMove(Delta.x, Delta.y);
-	std::this_thread::sleep_for(delay);
-	return FinalPos;
-}
-CMousePos MoveThenClick(CMousePos PreviousPos, CMousePos Delta, std::chrono::milliseconds delay)
-{
-	auto FinalPos = PreviousPos + Delta;
-
-	MoveThenWait(PreviousPos, Delta, delay);
-
-	ClickThenWait(15ms);
-
-	return FinalPos;
-}
-
 void FleaBot::BuyFirstItemStack(CMousePos StartingPos)
 {
-	CMousePos DesiredPos{ 1775, 180 };
-	auto Delta = DesiredPos - StartingPos;
-
-	auto CurPos = MoveThenClick(StartingPos, Delta, ShortDelay);
-	CurPos = MoveThenClick(CurPos, { -625,310 }, ShortDelay);
-	CurPos = MoveThenClick(CurPos, { -285,115 }, ShortDelay);
+	auto CurPos = SimpleInput::MoveToThenClick(StartingPos, SimpleInput::Positions::PurchaseButton, ShortDelay);
+	CurPos = SimpleInput::MoveToThenClick(CurPos, SimpleInput::Positions::AllButton, ShortDelay);
+	CurPos = SimpleInput::MoveToThenClick(CurPos, SimpleInput::Positions::YesButton, ShortDelay);
 
 	/* Wait for order to process */
 	std::this_thread::sleep_for(LongDelay);
-	CurPos = MoveThenClick(CurPos, { 95, -25 }, ShortDelay);
+	CurPos = SimpleInput::MoveToThenClick(CurPos, SimpleInput::Positions::OkButton, ShortDelay);
 
-	Delta = StartingPos - CurPos;
-	MyMakcu::m_Device.mouseMove(Delta.x, Delta.y);
+	SimpleInput::MoveTo(CurPos, StartingPos);
+}
+
+void FleaBot::ReturnToMainMenuAndWait(CMousePos StartingPos, std::chrono::seconds Delay)
+{
+	auto CurPos = SimpleInput::MoveToThenClick(StartingPos, SimpleInput::Positions::MainMenuButton, 100ms);
+
+	std::println("[{0:%T}] [Flea Bot] Waiting {1:d} seconds on main menu", std::chrono::system_clock::now(), Delay.count());
+	std::this_thread::sleep_for(Delay);
+
+	CurPos = SimpleInput::MoveToThenClick(CurPos, SimpleInput::Positions::FleaMarketButton, 100ms);
+
+	SimpleInput::MoveTo(CurPos, StartingPos);
 }
 
 void FleaBot::CycleBuy(CMousePos StartingPos)
 {
-	const auto ConstructionListStart = CMousePos{ 559,240 };
-	const auto Delta = ConstructionListStart - StartingPos;
-
-	auto CurPos = MoveThenWait(StartingPos, Delta, CycleDelay);
+	auto CurPos = SimpleInput::MoveToThenWait(StartingPos, SimpleInput::Positions::BuildingMaterialsTab, CycleDelay);
 	bool bFailed{ false };
 
 	constexpr size_t ItemRows = 17;
@@ -225,7 +255,7 @@ void FleaBot::CycleBuy(CMousePos StartingPos)
 	for (int i = 0; i < ItemRows && !bFailed && bMasterToggle; i++)
 	{
 		bHasNewOfferData = false;
-		CurPos = MoveThenClick(CurPos, { 0,25 }, CycleDelay);
+		CurPos = SimpleInput::MoveToThenClick(CurPos, CurPos + CMousePos{ 0,25 }, CycleDelay);
 		auto OfferJson = AwaitNewOfferData(TimeoutDuration);
 
 		if (OfferJson.is_null())
@@ -251,7 +281,8 @@ void FleaBot::CycleBuy(CMousePos StartingPos)
 	if (bFailed)
 	{
 		std::println("[{0:%T}] [Flea Bot] Too many failed attempts; stopping flea bot.", std::chrono::system_clock::now());
-		bMasterToggle = false;
+		CurPos = SimpleInput::MoveToRefreshButton(CurPos);
+		ReturnToMainMenuAndWait(CurPos, 30s);
 		return;
 	}
 
@@ -259,16 +290,16 @@ void FleaBot::CycleBuy(CMousePos StartingPos)
 		return;
 
 	/* click on the category following the last item */
-	CurPos = MoveThenClick(CurPos, { 0,25 }, SuperCycleDelay);
+	CurPos = SimpleInput::MoveToThenClick(CurPos, CurPos + CMousePos{ 0,25 }, SuperCycleDelay);
 
 	/* click refresh and wait for response */
-	MoveThenClick(CurPos, StartingPos - CurPos, ShortDelay);
+	SimpleInput::MoveToThenClick(CurPos, SimpleInput::Positions::RefreshButton, ShortDelay);
 	bHasNewOfferData = false;
 	auto Response = AwaitNewOfferData(5000ms);
 	if (Response.is_null())
 	{
 		std::println("[{0:%T}] [Flea Bot] No new data received after cycling building materials.", std::chrono::system_clock::now());
-		bMasterToggle = false;
+		ReturnToMainMenuAndWait(CurPos, 30s);
 	}
 }
 

@@ -3,26 +3,29 @@
 
 namespace Offsets
 {
+	// UnityPlayer.dll
 	//48 89 05 ? ? ? ? 48 83 C4 ? C3 33 C9
 	//48 8B 15 ? ? ? ? 48 83 C2 ? 48 3B DA
 	//48 8B 35 ? ? ? ? 48 85 F6 0F 84 ? ? ? ? 8B 46
 	//48 89 2D ? ? ? ? 48 8B 6C 24 ? 48 83 C4 ? 5E C3 33 ED
 	//48 8B 0D ? ? ? ? 4C 8D 4C 24 ? 4C 8D 44 24 ? 89 44 24
-	inline constexpr std::ptrdiff_t pGOM{ 0x1A23EF8 };
+	inline constexpr std::ptrdiff_t pGOM{ 0x1A233A0 };
 
+	// UnityPlayer.dll
 	//4C 8B 05 ? ? ? ? 33 D2 49 8B 48
 	//48 8B 05 ? ? ? ? 48 8B 08 49 8B 3C 0C
 	//48 8B 05 ? ? ? ? 48 8B 38 48 8B 3C 3E
 	//48 8B 05 ? ? ? ? 49 C7 C6 ? ? ? ? 8B 48 ? 85 C9 0F 84 ? ? ? ? 48 89 B4 24
 	//48 8B 05 ? ? ? ? 49 C7 C6 ? ? ? ? 8B 48 ? 85 C9 0F 84 ? ? ? ? 48 89 9C 24
-	inline constexpr std::ptrdiff_t pCameras{ 0x19F3040 };
+	inline constexpr std::ptrdiff_t pCameras{ 0x19F3080 };
 
+	// GameAssembly.dll
 	// 48 8B 0D ? ? ? ? 8B F0 48 8B 91 ? ? ? ? 48 8B 4A
 	// 48 8B 05 ? ? ? ? BA ? ? ? ? 4C 8B 0D ? ? ? ? 41 B8
 	// 48 8B 05 ? ? ? ? 48 8B 80 ? ? ? ? 48 89 6C 24 ? 4C 8B 30
 	// 48 8B 0D ? ? ? ? 48 8B 89 ? ? ? ? 48 89 6C 24 ? 4C 8B 31
 	// 48 8B 0D ? ? ? ? 48 8B F8 48 8B 91 ? ? ? ? 48 8B 0A 48 85 C9 74
-	inline constexpr std::ptrdiff_t ZLibObject{ 0x57F68A8 };
+	inline constexpr std::ptrdiff_t ZLibObject{ 0x58102F8 };
 
 	namespace CGameObjectManager
 	{
@@ -33,11 +36,11 @@ namespace Offsets
 	/* namespace: EFT, class: GameWorld : UnityEngine::MonoBehaviour */
 	namespace CLocalGameWorld
 	{
-		inline constexpr std::ptrdiff_t pExfiltrationController{ 0x48 };
-		inline constexpr std::ptrdiff_t pMapName{ 0xC0 };
-		inline constexpr std::ptrdiff_t pRegisteredPlayers{ 0x198 };
-		inline constexpr std::ptrdiff_t pMainPlayer{ 0x1E8 };
-		inline constexpr std::ptrdiff_t pLootList{ 0x180 };
+		inline constexpr std::ptrdiff_t pExfiltrationController{ 0x50 };
+		inline constexpr std::ptrdiff_t pMapName{ 0xC8 };
+		inline constexpr std::ptrdiff_t pLootList{ 0x190 };
+		inline constexpr std::ptrdiff_t pRegisteredPlayers{ 0x1B0 };
+		inline constexpr std::ptrdiff_t pMainPlayer{ 0x208 };
 	};
 
 	namespace CExfiltrationController
@@ -72,19 +75,18 @@ namespace Offsets
 	{
 		inline constexpr std::ptrdiff_t pMovementContext{ 0x60 };
 		inline constexpr std::ptrdiff_t pPlayerBody{ 0x190 };
-		inline constexpr std::ptrdiff_t pLocation{ 0x868 };
-		inline constexpr std::ptrdiff_t pProfile{ 0x8E0 };
-		inline constexpr std::ptrdiff_t pAiData{ 0x920 };
-		inline constexpr std::ptrdiff_t pHandsController{ 0x960 };
+		inline constexpr std::ptrdiff_t pProfile{ 0x900 };
+		inline constexpr std::ptrdiff_t pAiData{ 0x940 };
+		inline constexpr std::ptrdiff_t pHandsController{ 0x980 };
 	}
 	namespace CObservedPlayer
 	{
-		inline constexpr std::ptrdiff_t pPlayerBody{ 0xC8 };
-		inline constexpr std::ptrdiff_t pPlayerController{ 0x20 };
-		inline constexpr std::ptrdiff_t IsAi{ 0x98 };
-		inline constexpr std::ptrdiff_t PlayerSide{ 0x8C };
-		inline constexpr std::ptrdiff_t pVoice{ 0x38 };
-		inline constexpr std::ptrdiff_t pAiData{ 0x68 };
+		inline constexpr std::ptrdiff_t pPlayerBody{ 0xD8 };
+		inline constexpr std::ptrdiff_t pPlayerController{ 0x28 };
+		inline constexpr std::ptrdiff_t IsAi{ 0xA0 };
+		inline constexpr std::ptrdiff_t PlayerSide{ 0x94 };
+		inline constexpr std::ptrdiff_t pVoice{ 0x40 };
+		inline constexpr std::ptrdiff_t pAiData{ 0x70 };
 	}
 	namespace CPlayerController
 	{
@@ -136,8 +138,8 @@ namespace Offsets
 	}
 	namespace CTransformHierarchy
 	{
-		inline constexpr std::ptrdiff_t pVertices{ 0x40 };
-		inline constexpr std::ptrdiff_t pIndices{ 0x90 };
+		inline constexpr std::ptrdiff_t pVertices{ 0x68 };
+		inline constexpr std::ptrdiff_t pIndices{ 0x40 };
 	}
 	namespace CObservedPlayerController
 	{
@@ -159,7 +161,7 @@ namespace Offsets
 	}
 	namespace CBotOwner
 	{
-		inline constexpr std::ptrdiff_t pSpawnProfileData{ 0x3C0 };
+		inline constexpr std::ptrdiff_t pSpawnProfileData{ 0x3C8 };
 	}
 
 	/* EFT.InventoryLogic::StackSlot */
@@ -200,8 +202,8 @@ namespace Offsets
 	}
 	namespace CUnityTransform
 	{
-		inline constexpr std::ptrdiff_t pTransformHierarchy{ 0x90 };
-		inline constexpr std::ptrdiff_t Index{ 0x98 };
+		inline constexpr std::ptrdiff_t pTransformHierarchy{ 0x70 };
+		inline constexpr std::ptrdiff_t Index{ 0x78 };
 	}
 	namespace CBoneArray
 	{
