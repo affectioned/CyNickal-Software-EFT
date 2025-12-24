@@ -7,17 +7,17 @@ using namespace std::chrono_literals;
 
 void FleaBot::Render()
 {
-	if (pThread && !bMasterToggle)
+	if (pInputThread && !bMasterToggle && bInputThreadDone)
 	{
-		std::println("[Flea Bot] Stopping input thread...");
-		pThread->join();
-		pThread = nullptr;
+		std::println("[{0:%T}] [Flea Bot] Stopping input thread.", std::chrono::system_clock::now());
+		pInputThread->join();
+		pInputThread = nullptr;
 	};
 
-	if (!pThread && bMasterToggle)
+	if (!pInputThread && bMasterToggle)
 	{
-		std::println("[Flea Bot] Starting input thread...");
-		pThread = std::make_unique<std::thread>(&FleaBot::InputThread);
+		bInputThreadDone = false;
+		pInputThread = std::make_unique<std::thread>(&FleaBot::InputThread);
 	}
 
 	ImGui::Begin("Flea Bot");
@@ -34,22 +34,17 @@ void FleaBot::OnNewResponse()
 
 	auto ResponseType = IdentifyResponse(Json);
 
-	if (ResponseType == EResponseType::INVALID)
+	if (ResponseType == EResponseType::Offer)
 	{
-		std::println("[FleaBot] Invalid response received.");
-	}
-	else if (ResponseType == EResponseType::Offer)
-	{
-		std::println("[FleaBot] Offer response received.");
-		bHasNewData = true;
-		std::scoped_lock Lock(JsonMutex);
+		bHasNewOfferData = true;
+		std::scoped_lock Lock(LastOfferMut);
 		LatestOfferJson = Json;
 	}
 }
 
 void FleaBot::InputThread()
 {
-	std::println("[Flea Bot] Input thread started.");
+	std::println("[{0:%T}] [Flea Bot] Input thread started.", std::chrono::system_clock::now());
 
 	while (bMasterToggle)
 	{
@@ -62,7 +57,8 @@ void FleaBot::InputThread()
 		std::this_thread::sleep_for(std::chrono::milliseconds(25));
 	}
 
-	std::println("[Flea Bot] Input thread joining");
+	std::println("[{0:%T}] [Flea Bot] Input thread joining", std::chrono::system_clock::now());
+	bInputThreadDone = true;
 }
 
 EResponseType FleaBot::IdentifyResponse(const nlohmann::json& ResponseJson)
@@ -109,7 +105,7 @@ bool FleaBot::DoesOfferMeetCriteria(const nlohmann::json& OfferJson)
 	if (Price > MaxPriceForItem)
 		return false;
 
-	std::println("[Flea Bot] Found offer meeting criteria: Price = {}, Currency = {}, Quantity = {}", Price, CurrencyType, Quantity);
+	std::println("[{0:%T}] [Flea Bot] Buying item {1:s} x {2:d} for {3:d}", std::chrono::system_clock::now(), ItemId, Quantity, Price);
 
 	return true;
 }
@@ -118,14 +114,6 @@ void FleaBot::ClickInFiveSeconds()
 {
 	std::this_thread::sleep_for(std::chrono::seconds(5));
 	MyMakcu::m_Device.click(makcu::MouseButton::LEFT);
-}
-
-void FleaBot::HandleOffers(const nlohmann::json& OfferJson)
-{
-	auto FirstOffer = OfferJson[0];
-
-	if (DoesOfferMeetCriteria(FirstOffer))
-		bRequestedBuy = true;
 }
 
 const auto ShortDelay = 50ms;
@@ -158,8 +146,6 @@ CMousePos MoveThenClick(CMousePos PreviousPos, CMousePos Delta, std::chrono::mil
 
 void FleaBot::BuyFirstItemStack(CMousePos StartingPos)
 {
-	std::println("[Flea Bot] Buying top item...");
-
 	CMousePos DesiredPos{ 1775, 180 };
 	auto Delta = DesiredPos - StartingPos;
 
@@ -177,50 +163,93 @@ void FleaBot::BuyFirstItemStack(CMousePos StartingPos)
 
 void FleaBot::CycleBuildingMaterials(CMousePos StartingPos)
 {
-	using namespace std::chrono_literals;
-
 	const auto ConstructionListStart = CMousePos{ 559,240 };
 	const auto Delta = ConstructionListStart - StartingPos;
 
 	auto CurPos = MoveThenWait(StartingPos, Delta, 300ms);
+	bool bFailed{ false };
 
 	constexpr size_t ItemRows = 17;
-	for (int i = 0; i < ItemRows && bMasterToggle; i++)
+	uint32_t FailedAttempts{ 0 };
+	for (int i = 0; i < ItemRows && !bFailed && bMasterToggle; i++)
 	{
-		bHasNewData = false;
-		CurPos = MoveThenClick(CurPos, { 0,25 }, 250ms);
+		bHasNewOfferData = false;
+		CurPos = MoveThenClick(CurPos, { 0,25 }, 300ms);
+		auto OfferJson = AwaitNewOfferData(1500ms);
 
-		auto StartTime = std::chrono::steady_clock::now();
-		while (!bHasNewData && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - StartTime).count() < 1000)
+		if (OfferJson.is_null())
 		{
-			std::println("[Flea Bot] Waiting for new data...");
+			FailedAttempts++;
+			std::println("[{0:%T}] [Flea Bot] No new data received for item index {1:d}; failed attempts: {2:d}", std::chrono::system_clock::now(), i + 1, FailedAttempts);
+
+			if (FailedAttempts >= 5)
+				bFailed = true;
+
+			continue;
 		}
 
-		if (bHasNewData)
+		auto& FirstOffer = OfferJson["data"]["offers"][0];
+		if (DoesOfferMeetCriteria(FirstOffer))
 		{
-			std::println("[Flea Bot] New data received during building materials cycle.");
-
-			std::scoped_lock Lock(JsonMutex);
-			HandleOffers(LatestOfferJson["data"]["offers"]);
-
-			auto& FirstOffer = LatestOfferJson["data"]["offers"][0];
-			if (DoesOfferMeetCriteria(FirstOffer))
-			{
-				/* Waiting for response to populate UI */
-				std::this_thread::sleep_for(20ms);
-				BuyFirstItemStack(CurPos);
-			}
+			/* Waiting for response to populate UI */
+			std::this_thread::sleep_for(20ms);
+			BuyFirstItemStack(CurPos);
 		}
-
-		std::this_thread::sleep_for(15ms);
 	}
 
+	if (bFailed)
+	{
+		std::println("[{0:%T}] [Flea Bot] Too many failed attempts; stopping flea bot.", std::chrono::system_clock::now());
+		bMasterToggle = false;
+		return;
+	}
+
+	if (!bMasterToggle)
+		return;
+
+	/* click on the category following the last item */
+	CurPos = MoveThenClick(CurPos, { 0,25 }, 500ms);
+
+	/* click refresh and wait for response */
 	MoveThenClick(CurPos, StartingPos - CurPos, ShortDelay);
+	bHasNewOfferData = false;
+	auto Response = AwaitNewOfferData(5000ms);
+	if (Response.is_null())
+	{
+		std::println("[{0:%T}] [Flea Bot] No new data received after cycling building materials.", std::chrono::system_clock::now());
+		bMasterToggle = false;
+	}
+}
+
+nlohmann::json FleaBot::AwaitNewOfferData(std::chrono::milliseconds Timeout)
+{
+	const auto StartTime = std::chrono::steady_clock::now();
+	bool bFailed{ false };
+	auto Return = nlohmann::json();
+
+	while (bHasNewOfferData == false && bFailed == false)
+	{
+		std::chrono::milliseconds Elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - StartTime);
+
+		if (Elapsed >= Timeout)
+		{
+			bFailed = true;
+			std::println("[{0:%T}] [Flea Bot] AwaitNewOfferData timed out after {1:d} ms.", std::chrono::system_clock::now(), Elapsed.count());
+		}
+	}
+
+	if (bFailed == false)
+	{
+		std::scoped_lock Lock(LastOfferMut);
+		Return = LatestOfferJson;
+	}
+
+	return Return;
 }
 
 void FleaBot::LimitBuyOneLogic(CMousePos StartingPos)
 {
-	std::scoped_lock Lock(JsonMutex);
+	std::scoped_lock Lock(LastOfferMut);
 
 	if (LatestOfferJson.contains("data") == false || LatestOfferJson["data"].contains("offers") == false || LatestOfferJson["data"]["offers"].empty())
 		return;
