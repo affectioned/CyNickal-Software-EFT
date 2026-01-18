@@ -16,7 +16,7 @@ public:
 	float m_Yaw{ 0.0f };
 	EPlayerSide m_Side{ EPlayerSide::UNKNOWN };
 	ESpawnType m_SpawnType{ ESpawnType::UNKNOWN };
-	std::byte m_AiByte{ 0 };
+	bool m_IsAi{ false };
 
 private:
 	uintptr_t m_PlayerBodyAddress{ 0 };
@@ -42,6 +42,7 @@ public:
 	void QuickFinalize();
 
 public:
+	const bool IsScav() const;
 	const bool IsAi() const;
 	const bool IsPMC() const;
 	const bool IsPlayerScav() const;

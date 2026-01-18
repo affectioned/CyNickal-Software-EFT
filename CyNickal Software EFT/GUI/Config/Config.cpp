@@ -199,7 +199,8 @@ json Config::SerializeConfig() {
 		{"Player", {
 			{"bNameText", DrawESPPlayers::bNameText},
 			{"bSkeleton", DrawESPPlayers::bSkeleton},
-			{"bHeadDot", DrawESPPlayers::bHeadDot}
+			{"bHeadDot", DrawESPPlayers::bHeadDot},
+			{"bOpticESP", DrawESPPlayers::bOpticESP},
 		}},
 
 		{"Loot", {
@@ -350,6 +351,9 @@ void Config::DeserializeConfig(const json& j) {
 			}
 			if (PlayerTable.contains("bHeadDot")) {
 				DrawESPPlayers::bHeadDot = PlayerTable["bHeadDot"].get<bool>();
+			}
+			if (PlayerTable.contains("bOpticESP")) {
+				DrawESPPlayers::bOpticESP = PlayerTable["bOpticESP"].get<bool>();
 			}
 		}
 

@@ -33,7 +33,7 @@ void CBaseEFTPlayer::PrepareRead_2(VMMDLL_SCATTER_HANDLE vmsh)
 
 	if (m_AIDataAddress)
 	{
-		VMMDLL_Scatter_PrepareEx(vmsh, m_AIDataAddress + Offsets::CAIData::bIsAi, sizeof(std::byte), reinterpret_cast<BYTE*>(&m_AiByte), nullptr);
+		VMMDLL_Scatter_PrepareEx(vmsh, m_AIDataAddress + Offsets::CAIData::bIsAi,sizeof(bool), reinterpret_cast<BYTE*>(&m_IsAi), nullptr);
 		VMMDLL_Scatter_PrepareEx(vmsh, m_AIDataAddress + Offsets::CAIData::pBotOwner, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_BotOwnerAddress), nullptr);
 	}
 }
@@ -137,9 +137,14 @@ void CBaseEFTPlayer::QuickFinalize()
 		m_pSkeleton->QuickFinalize();
 }
 
+const bool CBaseEFTPlayer::IsScav() const
+{
+	return (m_Side == EPlayerSide::SCAV);
+}
+
 const bool CBaseEFTPlayer::IsAi() const
 {
-	return m_AiByte != std::byte{ 0 };
+	return m_IsAi;
 }
 
 const bool CBaseEFTPlayer::IsPMC() const
@@ -149,22 +154,23 @@ const bool CBaseEFTPlayer::IsPMC() const
 
 const bool CBaseEFTPlayer::IsPlayerScav() const
 {
-	return IsAi() == false && m_Side == EPlayerSide::SCAV;
+	return !IsAi() && IsScav();
 }
 
 const std::string PMCLabel = "PMC";
 const std::string PlayerScavLabel = "PScav";
 const std::string ScavLabel = "Scav";
+
 const std::string& CBaseEFTPlayer::GetBaseName() const
 {
 	if (IsBoss())
 		return GetBossName();
 
-	if (IsPlayerScav())
-		return PlayerScavLabel;
-
 	if (IsAi())
 		return ScavLabel;
+
+	if (IsPlayerScav())
+		return PlayerScavLabel;
 
 	return PMCLabel;
 }
@@ -182,11 +188,11 @@ const ImColor CBaseEFTPlayer::GetFuserColor() const
 	if (IsBoss())
 		return ColorPicker::Fuser::m_BossColor;
 
-	if (IsPlayerScav())
-		return ColorPicker::Fuser::m_PlayerScavColor;
-
 	if (IsAi())
 		return ColorPicker::Fuser::m_ScavColor;
+
+	if (IsPlayerScav())
+		return ColorPicker::Fuser::m_PlayerScavColor;
 
 	return ColorPicker::Fuser::m_PMCColor;
 }
@@ -196,11 +202,11 @@ const ImColor CBaseEFTPlayer::GetRadarColor() const
 	if (IsBoss())
 		return ColorPicker::Radar::m_BossColor;
 
-	if (IsPlayerScav())
-		return ColorPicker::Radar::m_PlayerScavColor;
-
 	if (IsAi())
 		return ColorPicker::Radar::m_ScavColor;
+
+	if (IsPlayerScav())
+		return ColorPicker::Radar::m_PlayerScavColor;
 
 	return ColorPicker::Radar::m_PMCColor;
 }
