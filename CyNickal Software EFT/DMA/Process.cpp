@@ -30,19 +30,37 @@ bool Process::GetProcessInfo(DMA_Connection* Conn)
 const uintptr_t Process::GetBaseAddress() const
 {
 	using namespace ConstStrings;
-	return m_Modules.at(Game);
+	return m_Modules.at(Game).Base;
+}
+
+const uintptr_t Process::GetBaseSize() const
+{
+	using namespace ConstStrings;
+	return m_Modules.at(Game).Size;
 }
 
 const uintptr_t Process::GetUnityAddress() const
 {
 	using namespace ConstStrings;
-	return m_Modules.at(Unity);
+	return m_Modules.at(Unity).Base;
 }
 
-const uintptr_t Process::GetAssemblyBase() const
+const uintptr_t Process::GetUnitySize() const
 {
 	using namespace ConstStrings;
-	return m_Modules.at(GameAssembly);
+	return m_Modules.at(Unity).Size;
+}
+
+const uintptr_t Process::GetAssemblyAddress() const
+{
+	using namespace ConstStrings;
+	return m_Modules.at(GameAssembly).Base;
+}
+
+const uintptr_t Process::GetAssemblySize() const
+{
+	using namespace ConstStrings;
+	return m_Modules.at(GameAssembly).Size;
 }
 
 const DWORD Process::GetPID() const
@@ -50,9 +68,24 @@ const DWORD Process::GetPID() const
 	return m_PID;
 }
 
-const uintptr_t Process::GetModuleAddress(const std::string& ModuleName)
+bool Process::ResolveModule(DMA_Connection* Conn, const std::string& moduleName)
 {
-	return m_Modules.at(ModuleName);
+	auto handle = Conn->GetHandle();
+
+	PVMMDLL_MAP_MODULEENTRY entry{};
+	std::wstring wName(moduleName.begin(), moduleName.end());
+
+	if (!VMMDLL_Map_GetModuleFromNameW(handle, m_PID, const_cast<LPWSTR>(wName.c_str()), &entry, VMMDLL_MODULE_FLAG_NORMAL))
+	{
+		return false;
+	}
+
+	ModuleInfo info{};
+	info.Base = entry->vaBase;
+	info.Size = entry->cbImageSize;
+
+	m_Modules[moduleName] = info;
+	return true;
 }
 
 bool Process::PopulateModules(DMA_Connection* Conn)
@@ -61,22 +94,26 @@ bool Process::PopulateModules(DMA_Connection* Conn)
 
 	auto Handle = Conn->GetHandle();
 
-	while (!m_Modules[Game] || !m_Modules[Unity] || !m_Modules[GameAssembly])
+	const std::vector<std::string> modulesToLoad = { Game, Unity, GameAssembly };
+
+	for (const auto& moduleName : modulesToLoad)
 	{
-		if (!m_Modules[Game])
-			m_Modules[Game] = VMMDLL_ProcessGetModuleBaseU(Handle, this->m_PID, Game.c_str());
-
-		if (!m_Modules[Unity])
-			m_Modules[Unity] = VMMDLL_ProcessGetModuleBaseU(Handle, this->m_PID, Unity.c_str());
-
-		if(!m_Modules[GameAssembly])
-			m_Modules[GameAssembly] = VMMDLL_ProcessGetModuleBaseU(Handle, this->m_PID, GameAssembly.c_str());
-
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		while (!m_Modules.contains(moduleName) || m_Modules[moduleName].Base == 0)
+		{
+			ResolveModule(Conn, moduleName);
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		}
 	}
 
-	for (auto& [Name, Address] : m_Modules)
-		std::println("Module `{}` at address 0x{:X}", Name, Address);
+	for (const auto& [Name, Info] : m_Modules)
+	{
+		std::println(
+			"Module `{}` at address 0x{:X} (size: 0x{:X})",
+			Name,
+			Info.Base,
+			Info.Size
+		);
+	}
 
-	return false;
+	return true;
 }

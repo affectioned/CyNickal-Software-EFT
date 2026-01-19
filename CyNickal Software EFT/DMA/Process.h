@@ -9,21 +9,30 @@ namespace ConstStrings
 	const std::string GameAssembly = "GameAssembly.dll";
 }
 
+struct ModuleInfo
+{
+	uintptr_t Base = 0;
+	size_t    Size = 0;
+};
+
 class Process
 {
 private:
 	DWORD m_PID = 0;
-	std::unordered_map<std::string, uintptr_t> m_Modules;
+	std::unordered_map<std::string, ModuleInfo> m_Modules;
 
 public:
 	bool GetProcessInfo(DMA_Connection* Conn);
 	const uintptr_t GetBaseAddress() const;
+	const uintptr_t GetBaseSize() const;
 	const uintptr_t GetUnityAddress() const;
-	const uintptr_t GetAssemblyBase() const;
+	const uintptr_t GetUnitySize() const;
+	const uintptr_t GetAssemblyAddress() const;
+	const uintptr_t GetAssemblySize() const;
 	const DWORD GetPID() const;
-	const uintptr_t GetModuleAddress(const std::string& ModuleName);
 
 private:
+	bool ResolveModule(DMA_Connection* Conn, const std::string& moduleName);
 	bool PopulateModules(DMA_Connection* Conn);
 
 public:

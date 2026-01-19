@@ -4,12 +4,15 @@
 #include "Game/Camera List/Camera List.h"
 #include "Game/Response Data/Response Data.h"
 #include "GUI/Flea Bot/Flea Bot.h"
+#include "Offsets/Offsets.h"
 
 bool EFT::Initialize(DMA_Connection* Conn)
 {
 	std::println("Initializing EFT module...");
 
 	Proc.GetProcessInfo(Conn);
+
+	Offsets::ResolveOffsets(Conn);
 
 	CreateWorldIfNeeded(Conn);
 
@@ -27,29 +30,37 @@ const Process& EFT::GetProcess()
 
 void EFT::CreateWorldIfNeeded(DMA_Connection* Conn)
 {
-	if (FleaBot::bMasterToggle) {
-		return;
-	}
-
-	if (pGameWorld && pGameWorld->IsValidRaid(Conn)) {
-		return;
-	}
-
-	std::println("[EFT] Not in raid or invalid raid detected.");
-
-	auto LatestWorldAddr = GOM::GetLatestWorldAddr(Conn);
-
+	try 
 	{
-		std::scoped_lock Lock(m_GameWorldMutex);
-
-		pGameWorld.reset();
-
-		if (LatestWorldAddr) {
-			pGameWorld = std::make_unique<CLocalGameWorld>(LatestWorldAddr);
+		if (FleaBot::bMasterToggle) {
+			return;
 		}
-	}
 
-	CameraList::Initialize(Conn);
+		if (pGameWorld && pGameWorld->IsValidRaid(Conn)) {
+			return;
+		}
+
+		std::println("[EFT] Not in raid or invalid raid detected.");
+
+		auto LatestWorldAddr = GOM::GetLatestWorldAddr(Conn);
+
+		{
+			std::scoped_lock Lock(m_GameWorldMutex);
+
+			pGameWorld.reset();
+
+			if (LatestWorldAddr) {
+				pGameWorld = std::make_unique<CLocalGameWorld>(LatestWorldAddr);
+			}
+		}
+
+		CameraList::Initialize(Conn);
+	}
+	catch (const std::exception& e)
+	{
+		std::println("Exception in EFT::CreateWorldIfNeeded: {}", e.what());
+		return;
+	}
 }
 
 uintptr_t EFT::GetMainPlayerAddress()
@@ -62,14 +73,30 @@ uintptr_t EFT::GetMainPlayerAddress()
 
 void EFT::QuickUpdatePlayers(DMA_Connection* Conn)
 {
-	if (pGameWorld)
-		pGameWorld->QuickUpdatePlayers(Conn);
+	try
+	{
+		if (pGameWorld)
+			pGameWorld->QuickUpdatePlayers(Conn);
+	}
+	catch (const std::exception& e)
+	{
+		std::println("Exception in EFT::QuickUpdatePlayers: {}", e.what());
+		return;
+	}
 }
 
 void EFT::HandlePlayerAllocations(DMA_Connection* Conn)
 {
-	if (pGameWorld)
-		pGameWorld->HandlePlayerAllocations(Conn);
+	try
+	{
+		if (pGameWorld)
+			pGameWorld->HandlePlayerAllocations(Conn);
+	}
+	catch (const std::exception& e)
+	{
+		std::println("Exception in EFT::HandlePlayerAllocations: {}", e.what());
+		return;
+	}
 }
 
 CRegisteredPlayers& EFT::GetRegisteredPlayers()

@@ -247,6 +247,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Database\Database.cpp" />
+    <ClCompile Include="DMA\Signature Scanner.cpp" />
     <ClCompile Include="Game\Classes\CBaseLootItem\CBaseLootItem.cpp" />
     <ClCompile Include="Game\Classes\CCamera\CCamera.cpp" />
     <ClCompile Include="Game\Classes\CExfilPoint\CExfilPoint.cpp" />
@@ -274,6 +275,7 @@
     <ClCompile Include="Game\Classes\Players\CObservedPlayer\CObservedPlayer.cpp" />
     <ClCompile Include="Game\EFT.cpp" />
     <ClCompile Include="Game\GOM\GOM.cpp" />
+    <ClCompile Include="Game\Offsets\Offsets.cpp" />
     <ClCompile Include="Game\Response Data\Response Data.cpp" />
     <ClCompile Include="GUI\Aimbot\Aimbot.cpp" />
     <ClCompile Include="GUI\Color Picker\Color Picker.cpp" />
@@ -313,6 +315,7 @@
     <ClInclude Include="..\Dependencies\ImGui\imstb_textedit.h" />
     <ClInclude Include="..\Dependencies\ImGui\imstb_truetype.h" />
     <ClInclude Include="Database\Database.h" />
+    <ClInclude Include="DMA\Signature Scanner.h" />
     <ClInclude Include="Game\Classes\CBaseLootItem\CBaseLootItem.h" />
     <ClInclude Include="Game\Classes\CCamera\CCamera.h" />
     <ClInclude Include="Game\Classes\CExfilPoint\CExfilPoint.h" />

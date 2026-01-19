@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include "DMA/DMA.h"
 
 namespace Offsets
 {
@@ -9,7 +10,7 @@ namespace Offsets
 	//48 8B 35 ? ? ? ? 48 85 F6 0F 84 ? ? ? ? 8B 46
 	//48 89 2D ? ? ? ? 48 8B 6C 24 ? 48 83 C4 ? 5E C3 33 ED
 	//48 8B 0D ? ? ? ? 4C 8D 4C 24 ? 4C 8D 44 24 ? 89 44 24
-	inline constexpr std::ptrdiff_t pGOM{ 0x1A233A0 };
+	inline std::ptrdiff_t pGOM{ 0x1A233A0 };
 
 	// UnityPlayer.dll
 	//4C 8B 05 ? ? ? ? 33 D2 49 8B 48
@@ -17,7 +18,7 @@ namespace Offsets
 	//48 8B 05 ? ? ? ? 48 8B 38 48 8B 3C 3E
 	//48 8B 05 ? ? ? ? 49 C7 C6 ? ? ? ? 8B 48 ? 85 C9 0F 84 ? ? ? ? 48 89 B4 24
 	//48 8B 05 ? ? ? ? 49 C7 C6 ? ? ? ? 8B 48 ? 85 C9 0F 84 ? ? ? ? 48 89 9C 24
-	inline constexpr std::ptrdiff_t pCameras{ 0x19F3080 };
+	inline std::ptrdiff_t pCameras{ 0x19F3080 };
 
 	// GameAssembly.dll
 	// 48 8B 0D ? ? ? ? 8B F0 48 8B 91 ? ? ? ? 48 8B 4A
@@ -25,7 +26,9 @@ namespace Offsets
 	// 48 8B 05 ? ? ? ? 48 8B 80 ? ? ? ? 48 89 6C 24 ? 4C 8B 30
 	// 48 8B 0D ? ? ? ? 48 8B 89 ? ? ? ? 48 89 6C 24 ? 4C 8B 31
 	// 48 8B 0D ? ? ? ? 48 8B F8 48 8B 91 ? ? ? ? 48 8B 0A 48 85 C9 74
-	inline constexpr std::ptrdiff_t ZLibObject{ 0x58102F8 };
+	inline std::ptrdiff_t ZLibObject{ 0x58102F8 };
+
+	bool ResolveOffsets(DMA_Connection* Conn);
 
 	namespace CGameObjectManager
 	{

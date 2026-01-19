@@ -47,6 +47,7 @@ public:
 	const bool IsPMC() const;
 	const bool IsPlayerScav() const;
 	const std::string& GetBaseName() const;
+	const std::string& GetPMCTypeName() const;
 	const ImColor GetFuserColor() const;
 	const ImColor GetRadarColor() const;
 	const bool IsBoss() const;

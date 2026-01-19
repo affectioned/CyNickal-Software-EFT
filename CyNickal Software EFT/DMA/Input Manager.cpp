@@ -2,6 +2,7 @@
 #include "DMA.h"
 #include "Input Manager.h"
 #include "Game/EFT.h"
+#include "Signature Scanner.h"
 
 std::vector<int> GetPidListFromName(DMA_Connection* Conn, std::string name)
 {
@@ -23,65 +24,6 @@ std::vector<int> GetPidListFromName(DMA_Connection* Conn, std::string name)
 	}
 
 	return list;
-}
-
-static const char* hexdigits =
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-"\000\001\002\003\004\005\006\007\010\011\000\000\000\000\000\000"
-"\000\012\013\014\015\016\017\000\000\000\000\000\000\000\000\000"
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-"\000\012\013\014\015\016\017\000\000\000\000\000\000\000\000\000"
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
-"\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000";
-
-static uint8_t GetByte(const char* hex)
-{
-	return static_cast<uint8_t>((hexdigits[hex[0]] << 4) | (hexdigits[hex[1]]));
-}
-
-uint64_t FindSignature(DMA_Connection* Conn, const char* signature, uint64_t range_start, uint64_t range_end, int PID)
-{
-	if (!signature || signature[0] == '\0' || range_start >= range_end)
-		return 0;
-
-	if (PID == 0)
-		PID = EFT::GetProcess().GetPID();
-
-	std::vector<uint8_t> buffer(range_end - range_start);
-	if (!VMMDLL_MemReadEx(Conn->GetHandle(), PID, range_start, buffer.data(), buffer.size(), 0, VMMDLL_FLAG_NOCACHE))
-		return 0;
-
-	const char* pat = signature;
-	uint64_t first_match = 0;
-	for (uint64_t i = range_start; i < range_end; i++)
-	{
-		if (*pat == '?' || buffer[i - range_start] == GetByte(pat))
-		{
-			if (!first_match)
-				first_match = i;
-
-			if (!pat[2])
-				break;
-
-			pat += (*pat == '?') ? 2 : 3;
-		}
-		else
-		{
-			pat = signature;
-			first_match = 0;
-		}
-	}
-
-	return first_match;
 }
 
 template <typename T> T ReadFromPID(DMA_Connection* Conn, uintptr_t Address, DWORD PID)
@@ -143,11 +85,11 @@ bool c_keys::InitKeyboard(DMA_Connection* Conn)
 			uintptr_t win32k_base = win32k_module_info->vaBase;
 			size_t win32k_size = win32k_module_info->cbImageSize;
 			//win32ksgd
-			auto g_session_ptr = FindSignature(Conn, "48 8B 05 ? ? ? ? 48 8B 04 C8", win32k_base, win32k_base + win32k_size, pid);
+			auto g_session_ptr = SignatureScanner::FindSignature(Conn, "48 8B 05 ? ? ? ? 48 8B 04 C8", win32k_base, win32k_base + win32k_size, pid);
 			if (!g_session_ptr)
 			{
 				//win32k
-				g_session_ptr = FindSignature(Conn, "48 8B 05 ? ? ? ? FF C9", win32k_base, win32k_base + win32k_size, pid);
+				g_session_ptr = SignatureScanner::FindSignature(Conn, "48 8B 05 ? ? ? ? FF C9", win32k_base, win32k_base + win32k_size, pid);
 				if (!g_session_ptr)
 				{
 					std::println("failed to find g_session_global_slots");
@@ -184,7 +126,7 @@ bool c_keys::InitKeyboard(DMA_Connection* Conn)
 			size_t win32kbase_size = win32kbase_module_info->cbImageSize;
 
 			//Unsure if this sig will work on all versions. (sig is from PostUpdateKeyStateEvent function. seems to exist in both older version and the new version of win32kbase that I have checked)
-			uintptr_t ptr = FindSignature(Conn, "48 8D 90 ? ? ? ? E8 ? ? ? ? 0F 57 C0", win32kbase_base, win32kbase_base + win32kbase_size, pid);
+			uintptr_t ptr = SignatureScanner::FindSignature(Conn, "48 8D 90 ? ? ? ? E8 ? ? ? ? 0F 57 C0", win32kbase_base, win32kbase_base + win32kbase_size, pid);
 			uint32_t session_offset = 0x0;
 			if (ptr)
 			{

@@ -158,6 +158,8 @@ const bool CBaseEFTPlayer::IsPlayerScav() const
 }
 
 const std::string PMCLabel = "PMC";
+const std::string USECLabel = "USEC";
+const std::string BEARLabel = "BEAR";
 const std::string PlayerScavLabel = "PScav";
 const std::string ScavLabel = "Scav";
 
@@ -172,7 +174,20 @@ const std::string& CBaseEFTPlayer::GetBaseName() const
 	if (IsPlayerScav())
 		return PlayerScavLabel;
 
-	return PMCLabel;
+	return GetPMCTypeName();
+}
+
+const std::string& CBaseEFTPlayer::GetPMCTypeName() const
+{
+	switch (m_Side)
+	{
+	case EPlayerSide::USEC:
+		return USECLabel;
+	case EPlayerSide::BEAR:
+		return BEARLabel;
+	default:
+		return PMCLabel;
+	}
 }
 
 #include "BossNameMap.h"
