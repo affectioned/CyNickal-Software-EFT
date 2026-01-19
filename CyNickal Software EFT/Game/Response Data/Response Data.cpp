@@ -8,7 +8,7 @@ void ResponseData::Initialize(DMA_Connection* Conn)
 {
 	auto& Proc = EFT::GetProcess();
 
-	uintptr_t zlibObject = Proc.ReadMem<uintptr_t>(Conn, Proc.GetAssemblyBase() + Offsets::ZLibObject);
+	uintptr_t zlibObject = Proc.ReadMem<uintptr_t>(Conn, Proc.GetAssemblyAddress() + Offsets::ZLibObject);
 	m_JsonDataAddress = Proc.ReadChain(Conn, zlibObject, { 0xB8, 0x8, 0x28, 0x28 }) + 0x20;
 
 	std::println("[ResponseData] JSON Data Address: 0x{:X}", m_JsonDataAddress);
