@@ -8,24 +8,26 @@ CRegisteredPlayers::CRegisteredPlayers(uintptr_t RegisteredPlayersAddress) : CBa
 	std::println("[CRegisteredPlayers] Constructed CRegisteredPlayers with 0x{:X}", RegisteredPlayersAddress);
 }
 
-void CRegisteredPlayers::ExecuteStage(VMMDLL_SCATTER_HANDLE vmsh, std::vector<Player>& Players, uint8_t StageNum, DWORD PID) {
-	auto PrepareRead = [&StageNum, &vmsh](auto& Player) {
-		switch (StageNum) {
-		case 1: Player.PrepareRead_1(vmsh); break;
-		case 2: Player.PrepareRead_2(vmsh); break;
-		case 3: Player.PrepareRead_3(vmsh); break;
-		case 4: Player.PrepareRead_4(vmsh); break;
-		case 5: Player.PrepareRead_5(vmsh); break;
-		case 6: Player.PrepareRead_6(vmsh); break;
-		case 7: Player.PrepareRead_7(vmsh); break;
-		case 8: Player.PrepareRead_8(vmsh); break;
-		case 9: Player.PrepareRead_9(vmsh); break;
-		case 10: Player.PrepareRead_10(vmsh); break;
-		case 11: Player.PrepareRead_11(vmsh); break;
-		case 12: Player.PrepareRead_12(vmsh); break;
-		case 13: Player.PrepareRead_13(vmsh); break;
-		case 14: Player.PrepareRead_14(vmsh); break;
-		}
+constexpr std::size_t NUM_STAGES{ 14 };
+template<uint8_t StageNum>
+void ExecuteStage(VMMDLL_SCATTER_HANDLE vmsh, std::vector<CRegisteredPlayers::Player>& Players, DWORD PID) noexcept {
+	if constexpr (StageNum == 0 || StageNum > NUM_STAGES) return;
+
+	auto PrepareRead = [&vmsh](auto& Player) {
+		if constexpr (StageNum == 1) Player.PrepareRead_1(vmsh);
+		else if constexpr (StageNum == 2) Player.PrepareRead_2(vmsh);
+		else if constexpr (StageNum == 3) Player.PrepareRead_3(vmsh);
+		else if constexpr (StageNum == 4) Player.PrepareRead_4(vmsh);
+		else if constexpr (StageNum == 5) Player.PrepareRead_5(vmsh);
+		else if constexpr (StageNum == 6) Player.PrepareRead_6(vmsh);
+		else if constexpr (StageNum == 7) Player.PrepareRead_7(vmsh);
+		else if constexpr (StageNum == 8) Player.PrepareRead_8(vmsh);
+		else if constexpr (StageNum == 9) Player.PrepareRead_9(vmsh);
+		else if constexpr (StageNum == 10) Player.PrepareRead_10(vmsh);
+		else if constexpr (StageNum == 11) Player.PrepareRead_11(vmsh);
+		else if constexpr (StageNum == 12) Player.PrepareRead_12(vmsh);
+		else if constexpr (StageNum == 13) Player.PrepareRead_13(vmsh);
+		else if constexpr (StageNum == 14) Player.PrepareRead_14(vmsh);
 		};
 
 	for (auto& Player : Players) {
@@ -36,16 +38,18 @@ void CRegisteredPlayers::ExecuteStage(VMMDLL_SCATTER_HANDLE vmsh, std::vector<Pl
 	VMMDLL_Scatter_Clear(vmsh, PID, VMMDLL_FLAG_NOCACHE);
 }
 
+template<std::size_t... Stages>
+void ExecuteStages(VMMDLL_SCATTER_HANDLE vmsh, std::vector<CRegisteredPlayers::Player>& Players, DWORD PID, std::index_sequence<Stages...>) noexcept {
+	(ExecuteStage<Stages + 1>(vmsh, Players, PID), ...);
+}
+
 void CRegisteredPlayers::ExecuteReadsOnPlayerVec(DMA_Connection* Conn, std::vector<Player>& Players)
 {
 	const auto PID = EFT::GetProcess().GetPID();
 
 	auto vmsh = VMMDLL_Scatter_Initialize(Conn->GetHandle(), PID, VMMDLL_FLAG_NOCACHE);
 
-	constexpr uint8_t NUM_STAGES{ 14 };
-	for (uint8_t StageNum = 1; StageNum <= NUM_STAGES; StageNum++) {
-		ExecuteStage(vmsh, Players, StageNum, PID);
-	}
+	ExecuteStages(vmsh, Players, PID, std::make_index_sequence<NUM_STAGES>{});
 
 	VMMDLL_Scatter_CloseHandle(vmsh);
 
