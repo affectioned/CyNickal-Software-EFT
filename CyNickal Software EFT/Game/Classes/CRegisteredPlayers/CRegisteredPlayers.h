@@ -29,6 +29,7 @@ private: /* Private methods */
 	void ExecuteReadsOnPlayerVec(DMA_Connection* Conn, std::vector<Player>& Players);
 	void AllocatePlayersFromVector(DMA_Connection* Conn, std::vector<uintptr_t> PlayerAddresses, EPlayerType playerType);
 	void DeallocatePlayersFromVector(std::vector<uintptr_t> PlayerAddresses, EPlayerType playerType);
+	void ExecuteStage(VMMDLL_SCATTER_HANDLE vmsh, std::vector<Player>& Players, uint8_t StageNum, DWORD PID);
 
 private: /* Cache of addresses which are already processed */
 	std::vector<uintptr_t> m_PreviousObservedPlayers{};
