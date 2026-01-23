@@ -15,7 +15,7 @@ public:
 	void PrepareRead_6(VMMDLL_SCATTER_HANDLE vmsh);
 	void PrepareRead_7(VMMDLL_SCATTER_HANDLE vmsh);
 	void PrepareRead_8(VMMDLL_SCATTER_HANDLE vmsh);
-	void Finalize();
+	void Finalize(const std::string& mapName);
 	const ImColor& GetRadarColor() const;
 	const ImColor& GetFuserColor() const;
 

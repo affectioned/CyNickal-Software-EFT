@@ -3,12 +3,41 @@
 #include "Game/EFT.h"
 #include "Game/Offsets/Offsets.h"
 
-CExfilController::CExfilController(uintptr_t ExfilControllersAddress) : CBaseEntity(ExfilControllersAddress)
+CExfilController::CExfilController(uintptr_t ExfilControllersAddress, uintptr_t MapNameAddress) : CBaseEntity(ExfilControllersAddress)
 {
-	std::println("[CExfilController] Constructed with {0:X}", m_EntityAddress);
+	std::println("[CExfilController] Constructed with {0:X} and MapNameAddress {0:X}", m_EntityAddress, MapNameAddress);
 
 	auto Conn = DMA_Connection::GetInstance();
+
+	ReadMapName(Conn, MapNameAddress);
+
 	Initialize(Conn);
+}
+
+// could be move inside Initialize(DMA_Connection* Conn)
+void CExfilController::ReadMapName(DMA_Connection* Conn, uintptr_t MapNameAddress)
+{
+	if (MapNameAddress == 0)
+		return;
+	auto& Proc = EFT::GetProcess();
+
+	// IL2CPP String structure:
+	// +0x00: object header
+	// +0x10: int32 length
+	// +0x14: wchar_t data[length]
+
+	// Read the string length
+	int32_t length = Proc.ReadMem<int32_t>(Conn, MapNameAddress + 0x10);
+
+	if (length <= 0 || length > 256)
+		return;
+
+	std::vector<wchar_t> wideBuffer = Proc.ReadVec<wchar_t>(Conn, MapNameAddress + 0x14, length);
+
+	std::wstring wideStr(wideBuffer.data(), length);
+	m_MapName = std::string(wideStr.begin(), wideStr.end());
+
+	std::println("[CExfilController] Map Name: {}", m_MapName);
 }
 
 void CExfilController::Initialize(DMA_Connection* Conn)
@@ -104,5 +133,5 @@ void CExfilController::FullUpdate(DMA_Connection* Conn)
 	VMMDLL_Scatter_CloseHandle(vmsh);
 
 	for (auto& Exfil : m_Exfils)
-		Exfil.Finalize();
+		Exfil.Finalize(m_MapName);
 }

@@ -19,7 +19,7 @@ public:
 	static inline bool bNameText{ true };
 	static inline bool bSkeleton{ true };
 	static inline bool bHeadDot{ true };
-	static inline bool bOpticESP{ true };
+	static inline bool bOpticESP{ false };
 
 private:
 	static void DrawGenericPlayerText(const CBaseEFTPlayer& Player, const ImVec2& WindowPos, ImDrawList* DrawList, const ImColor& Color, uint8_t& LineNumber, std::array<ProjectedBoneInfo, SKELETON_NUMBONES>& ProjectedBones);

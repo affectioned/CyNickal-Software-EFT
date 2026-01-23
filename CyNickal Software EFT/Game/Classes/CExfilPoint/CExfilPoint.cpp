@@ -2,6 +2,7 @@
 #include "CExfilPoint.h"
 #include "Game/Offsets/Offsets.h"
 #include "GUI/Color Picker/Color Picker.h"
+#include "Database/Database.h"
 
 CExfilPoint::CExfilPoint(uintptr_t ExfilPointAddress) : CBaseEntity(ExfilPointAddress)
 {
@@ -85,12 +86,14 @@ void CExfilPoint::PrepareRead_8(VMMDLL_SCATTER_HANDLE vmsh)
 	m_Transform.PrepareRead_4(vmsh);
 }
 
-void CExfilPoint::Finalize()
+void CExfilPoint::Finalize(const std::string& mapName)
 {
 	if (IsInvalid())
 		return;
 
-	m_Name = std::string(m_NameBuffer.data());
+	std::string internalName(m_NameBuffer.data());
+
+	m_Name = TarkovExfilData::GetDisplayName(mapName, internalName);
 	m_Position = m_Transform.GetPosition();
 }
 

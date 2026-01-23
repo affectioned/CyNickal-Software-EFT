@@ -27,4 +27,5 @@ private:
 	std::uintptr_t LootListAddress{};
 	std::uintptr_t RegisteredPlayersAddress{};
 	std::uintptr_t ExfiltrationControllerAddress{};
+	std::uintptr_t MapNameAddress{};
 };

@@ -18,7 +18,8 @@ CLocalGameWorld::CLocalGameWorld(uintptr_t GameWorldAddress) : CBaseEntity(GameW
 	m_pRegisteredPlayers = std::make_unique<CRegisteredPlayers>(RegisteredPlayersAddress);
 
 	ExfiltrationControllerAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CLocalGameWorld::pExfiltrationController);
-	m_pExfilController = std::make_unique<CExfilController>(ExfiltrationControllerAddress);
+	MapNameAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CLocalGameWorld::pMapName);
+	m_pExfilController = std::make_unique<CExfilController>(ExfiltrationControllerAddress, MapNameAddress);
 
 	m_MainPlayerAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CLocalGameWorld::pMainPlayer);
 }

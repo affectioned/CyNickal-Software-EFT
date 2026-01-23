@@ -94,3 +94,52 @@ public:
 		return name;
 	}
 };
+
+class TarkovExfilData
+{
+public:
+	static std::string GetDisplayName(const std::string& map_name, const std::string& internal_name)
+	{
+		auto db = Database::GetTarkovDB();
+		const char* QueryStatement = "SELECT exfil_display_name FROM exfil_data WHERE LOWER(map_internal_name) = LOWER(?) AND LOWER(exfil_internal_name) = LOWER(?);";
+		sqlite3_stmt* stmt{ nullptr };
+		sqlite3_prepare_v2(db, QueryStatement, -1, &stmt, nullptr);
+		sqlite3_bind_text(stmt, 1, map_name.c_str(), -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 2, internal_name.c_str(), -1, SQLITE_STATIC);
+
+		std::string display_name;
+		if (sqlite3_step(stmt) == SQLITE_ROW)
+		{
+			const unsigned char* text = sqlite3_column_text(stmt, 0);
+			display_name = std::string(reinterpret_cast<const char*>(text));
+		}
+		else
+		{
+			// If not found in database, return the internal name
+			display_name = internal_name;
+		}
+
+		sqlite3_finalize(stmt);
+		return display_name;
+	}
+
+	static std::string GetFaction(const std::string& map_name, const std::string& internal_name)
+	{
+		auto db = Database::GetTarkovDB();
+		const char* QueryStatement = "SELECT faction FROM exfil_data WHERE LOWER(map_internal_name) = LOWER(?) AND LOWER(exfil_internal_name) = LOWER(?);";
+		sqlite3_stmt* stmt{ nullptr };
+		sqlite3_prepare_v2(db, QueryStatement, -1, &stmt, nullptr);
+		sqlite3_bind_text(stmt, 1, map_name.c_str(), -1, SQLITE_STATIC);
+		sqlite3_bind_text(stmt, 2, internal_name.c_str(), -1, SQLITE_STATIC);
+
+		std::string faction;
+		if (sqlite3_step(stmt) == SQLITE_ROW)
+		{
+			const unsigned char* text = sqlite3_column_text(stmt, 0);
+			faction = std::string(reinterpret_cast<const char*>(text));
+		}
+
+		sqlite3_finalize(stmt);
+		return faction;
+	}
+};

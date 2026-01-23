@@ -89,4 +89,110 @@ def UpdateAmmoTable():
     con.commit();
     con.close();
     return;
-UpdateAmmoTable();
+
+# NEW: Exfil Query
+ExfilQuery = """
+{
+  maps {
+    name
+    nameId
+    extracts {
+      name
+      faction
+    }
+  }
+}
+"""
+
+def CreateExfilTable():
+    """Create the exfil_data table if it doesn't exist"""
+    con = sqlite3.connect('../CyNickal Software EFT/EFT_Data.db')
+    cur = con.cursor()
+    
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS exfil_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            map_internal_name TEXT NOT NULL,
+            map_display_name TEXT NOT NULL,
+            exfil_internal_name TEXT NOT NULL,
+            exfil_display_name TEXT NOT NULL,
+            faction TEXT,
+            UNIQUE(map_internal_name, exfil_internal_name)
+        )
+    """)
+    
+    # Create index for fast lookups
+    cur.execute("""
+        CREATE INDEX IF NOT EXISTS idx_exfil_lookup 
+        ON exfil_data(map_internal_name, exfil_internal_name)
+    """)
+    
+    con.commit()
+    con.close()
+
+def UpdateExfilTable():
+    """Fetch exfil data from tarkov.dev and update the database"""
+    
+    MAP_NAME_MAPPING = {
+        'woods': 'woods',
+        'shoreline': 'shoreline',
+        'rezervbase': 'reserve',
+        'Labyrinth': 'labs',
+        'laboratory': 'labs',
+        'interchange': 'interchange',
+        'factory4_day': 'factory',
+        'factory4_night': 'factory',
+        'bigmap': 'customs',
+        'lighthouse': 'lighthouse',
+        'tarkovstreets': 'streets-of-tarkov',
+        'Sandbox': 'ground-zero',
+        'Sandbox_high': 'ground-zero'
+    }
+    
+    con = sqlite3.connect('../CyNickal Software EFT/EFT_Data.db')
+    cur = con.cursor()
+    
+    result = run_query(ExfilQuery)
+    
+    reverse_mapping = {}
+    for internal, api_id in MAP_NAME_MAPPING.items():
+        if api_id not in reverse_mapping:
+            reverse_mapping[api_id] = []
+        reverse_mapping[api_id].append(internal)
+    
+    total_inserted = 0
+    for map_data in result['data']['maps']:
+        map_api_id = map_data['nameId']
+        map_display_name = map_data['name']
+        
+        internal_names = reverse_mapping.get(map_api_id, [])
+        
+        if not internal_names:
+            print(f"Warning: No internal name mapping for {map_api_id}")
+            continue
+        
+        for extract in map_data['extracts']:
+            exfil_name = extract['name']
+            faction = extract.get('faction', 'Unknown')
+            
+            # Insert for each internal map name (e.g., both factory4_day and factory4_night)
+            for internal_name in internal_names:
+                cur.execute("""
+                    INSERT OR REPLACE INTO exfil_data 
+                    (map_internal_name, map_display_name, exfil_internal_name, exfil_display_name, faction) 
+                    VALUES (?, ?, ?, ?, ?)
+                """, (internal_name, map_display_name, exfil_name, exfil_name, faction))
+                total_inserted += 1
+        
+        print(f"Updated {len(map_data['extracts'])} exfils for {map_display_name}")
+    
+    con.commit()
+    con.close()
+    print(f"Exfil data updated successfully! Total entries: {total_inserted}")
+
+if __name__ == "__main__":
+    UpdateAmmoTable()
+    UpdateItemTable()
+    UpdateContainerTable()
+    CreateExfilTable()
+    UpdateExfilTable()
