@@ -50,6 +50,14 @@ void CObservedLootItem::Finalize()
 
 	m_pItemTemplate->Finalize();
 	std::string TarkovIDStr = std::string(m_TarkovID.begin(), m_TarkovID.end());
+
+	if (TarkovIDStr.empty() || TarkovIDStr.find_first_not_of('\0') == std::string::npos)
+	{
+		m_ItemPrice = -1;
+		m_Name = "";
+		return;
+	}
+
 	m_ItemPrice = TarkovItemData::GetPriceOfItem(TarkovIDStr);
 	m_Name = TarkovItemData::GetShortNameOfItem(TarkovIDStr);
 

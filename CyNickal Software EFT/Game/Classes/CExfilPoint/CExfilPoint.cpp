@@ -91,10 +91,10 @@ void CExfilPoint::Finalize(const std::string& mapName)
 	if (IsInvalid())
 		return;
 
-	std::string internalName(m_NameBuffer.data());
+	Vector3 unityPosition = m_Transform.GetPosition();
 
-	m_Name = TarkovExfilData::GetDisplayName(mapName, internalName);
-	m_Position = m_Transform.GetPosition();
+	m_Name = TarkovExfilData::GetDisplayNameByPosition(mapName, unityPosition);
+	m_Position = unityPosition;
 }
 
 const ImColor& CExfilPoint::GetRadarColor() const

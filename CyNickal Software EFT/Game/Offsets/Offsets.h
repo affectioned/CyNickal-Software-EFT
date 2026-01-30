@@ -82,7 +82,7 @@ namespace Offsets
 		inline constexpr std::ptrdiff_t pProceduralWeaponAnimation{ 0x338 };
 		inline constexpr std::ptrdiff_t pProfile{ 0x900 };
 		inline constexpr std::ptrdiff_t pAiData{ 0x940 };
-		inline constexpr std::ptrdiff_t pHandsController{ 0x980 };
+		inline constexpr std::ptrdiff_t pHandsController{ 0x960 };
 	}
 	namespace CProceduralWeaponAnimation
 	{
@@ -204,7 +204,7 @@ namespace Offsets
 	{
 		inline constexpr std::ptrdiff_t pShortName{ 0x18 };
 		inline constexpr std::ptrdiff_t pDescription{ 0x20 };
-		inline constexpr std::ptrdiff_t pTarkovID{ 0xF0 };
+		inline constexpr std::ptrdiff_t pTarkovID{ 0xE0 };
 		inline constexpr std::ptrdiff_t pName{ 0xF8 };
 		inline constexpr std::ptrdiff_t Width{ 0x3C };
 		inline constexpr std::ptrdiff_t Height{ 0x40 };
@@ -262,6 +262,6 @@ namespace Offsets
 	/* EFT.Interactive::LootableContainer */
 	namespace CLootableContainer
 	{
-		inline constexpr std::ptrdiff_t pBSGID{ 0x170 };
+		inline constexpr std::ptrdiff_t pBSGID{ 0x168 };
 	}
 };

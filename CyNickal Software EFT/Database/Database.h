@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sqlite3.h"
+#include "Game/Classes/CUnityTransform/CUnityTransform.h"
 
 class Database
 {
@@ -10,7 +11,7 @@ public:
 	static bool IsDBOnFile();
 
 private:
-	static void DownloadLatestDB();
+	static void CreateLocalDB();
 	static inline sqlite3* m_TarkovDB{ nullptr };
 };
 
@@ -98,25 +99,47 @@ public:
 class TarkovExfilData
 {
 public:
-	static std::string GetDisplayName(const std::string& map_name, const std::string& internal_name)
+	static std::string GetDisplayNameByPosition(const std::string& map_name, const Vector3& exfil_position)
 	{
-		auto db = Database::GetTarkovDB();
-		const char* QueryStatement = "SELECT exfil_display_name FROM exfil_data WHERE LOWER(map_internal_name) = LOWER(?) AND LOWER(exfil_internal_name) = LOWER(?);";
-		sqlite3_stmt* stmt{ nullptr };
-		sqlite3_prepare_v2(db, QueryStatement, -1, &stmt, nullptr);
-		sqlite3_bind_text(stmt, 1, map_name.c_str(), -1, SQLITE_STATIC);
-		sqlite3_bind_text(stmt, 2, internal_name.c_str(), -1, SQLITE_STATIC);
+		constexpr float tolerance = 5.0f;
 
-		std::string display_name;
+		auto db = Database::GetTarkovDB();
+
+		const char* QueryStatement = R"(
+			SELECT exfil_display_name,
+				   ((pos_x - ?) * (pos_x - ?) + 
+					(pos_y - ?) * (pos_y - ?) + 
+					(pos_z - ?) * (pos_z - ?)) as distance_sq
+			FROM exfil_data 
+			WHERE LOWER(map_internal_name) = LOWER(?)
+			ORDER BY distance_sq
+			LIMIT 1
+		)";
+
+		sqlite3_stmt* stmt{ nullptr };
+
+		if (sqlite3_prepare_v2(db, QueryStatement, -1, &stmt, nullptr) != SQLITE_OK)
+			return "Unknown";
+
+		sqlite3_bind_double(stmt, 1, exfil_position.x);
+		sqlite3_bind_double(stmt, 2, exfil_position.x);
+		sqlite3_bind_double(stmt, 3, exfil_position.y);
+		sqlite3_bind_double(stmt, 4, exfil_position.y);
+		sqlite3_bind_double(stmt, 5, exfil_position.z);
+		sqlite3_bind_double(stmt, 6, exfil_position.z);
+		sqlite3_bind_text(stmt, 7, map_name.c_str(), -1, SQLITE_STATIC);
+
+		std::string display_name = "Unknown";
+
 		if (sqlite3_step(stmt) == SQLITE_ROW)
 		{
-			const unsigned char* text = sqlite3_column_text(stmt, 0);
-			display_name = std::string(reinterpret_cast<const char*>(text));
-		}
-		else
-		{
-			// If not found in database, return the internal name
-			display_name = internal_name;
+			double distance = std::sqrt(sqlite3_column_double(stmt, 1));
+
+			if (distance < tolerance)
+			{
+				const unsigned char* text = sqlite3_column_text(stmt, 0);
+				display_name = std::string(reinterpret_cast<const char*>(text));
+			}
 		}
 
 		sqlite3_finalize(stmt);
