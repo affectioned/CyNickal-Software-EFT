@@ -6,12 +6,34 @@
 - 2D Radar including players (with view direction ray), lootable items, lootable containers, and exfils
 - Hardware level aimbot using Makcu
 - Hardware level Flea Market bot that automatically buys certain items at given price thresholds
-- A varity of entity tables that display fine details of each entity
+- A variety of entity tables that display fine details of each entity
 - Many customization options/toggles for each feature; too many to list here
 - Customizable colors for all entities on both Fuser and Radar
 - Multiple user config support
 
 Currently all features are **READ ONLY**
+
+# Runtime Requirements
+
+This application requires the following DLL dependencies to run:
+
+### MemProcFS Dependencies
+Download from [MemProcFS Releases](https://github.com/ufrisk/MemProcFS/releases):
+- `FTD3XX.dll`
+- `FTD3XXWU.dll`
+- `leechcore.dll`
+- `leechcore_driver.dll`
+- `vmm.dll`
+
+### Makcu Dependencies
+Download from [makcu-cpp Releases](https://github.com/K4HVH/makcu-cpp/releases):
+- `makcu-cpp.dll`
+
+### libcurl Dependencies
+Download from [curl for Windows](https://curl.se/windows/):
+- `libcurl-x64.dll`
+
+**Note:** All DLL files must be placed in the same directory as the executable or in your system PATH.
 
 # Contribute!
 This project is open to pull requests, please contribute!
