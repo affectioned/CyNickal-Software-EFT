@@ -14,6 +14,5 @@ private:
 	static void FetchAmmo(sqlite3* db);
 	static void FetchExfils(sqlite3* db);
 
-	static int64_t GetLastFetchTime(sqlite3* db);
-	static void UpdateLastFetchTime(sqlite3* db);
+	static int64_t GetFileAgeSecs();
 };
