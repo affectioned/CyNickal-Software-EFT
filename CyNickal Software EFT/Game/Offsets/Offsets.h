@@ -98,11 +98,6 @@ namespace Offsets
 		inline constexpr std::ptrdiff_t pVoice{ 0x40 };
 		inline constexpr std::ptrdiff_t pAiData{ 0x70 };
 	}
-	namespace CPlayerController
-	{
-		inline constexpr std::ptrdiff_t pMovementController{ 0x30 };
-		inline constexpr std::ptrdiff_t pHands{ 0x30 };
-	}
 	namespace CMovementController
 	{
 		inline constexpr std::ptrdiff_t pObservedPlayerState{ 0x98 };
@@ -144,10 +139,6 @@ namespace Offsets
 	namespace CSkeleton
 	{
 		inline constexpr std::ptrdiff_t pSkeletonValues{ 0x30 };
-	}
-	namespace CValues
-	{
-		inline constexpr std::ptrdiff_t pArr1{ 0x10 };
 	}
 	namespace CTransformHierarchy
 	{
