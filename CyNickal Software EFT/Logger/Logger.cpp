@@ -28,8 +28,8 @@ void Logger::Initialize()
 	int origFd = _dup(_fileno(stdout));
 
 	// Open the log file (overwrite each run)
-	FILE* logFile = fopen(g_LogPath.string().c_str(), "w");
-	if (!logFile)
+	FILE* logFile = nullptr;
+	if (fopen_s(&logFile, g_LogPath.string().c_str(), "w") != 0 || !logFile)
 	{
 		_close(origFd);
 		return;
