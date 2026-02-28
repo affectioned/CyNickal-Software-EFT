@@ -1,4 +1,7 @@
 # CyNickal Software EFT DMA
+
+> **Educational Disclaimer**
+> This project is intended strictly for **educational and research purposes** — specifically to demonstrate DMA (Direct Memory Access) hardware techniques, low-level Windows memory internals, and Unity game engine object layouts. The author does not endorse or encourage the use of this software in any live online game environment. Usage in a manner that violates any game's Terms of Service or applicable laws is solely the responsibility of the end user. No warranty is provided.
 <img width="1919" height="793" alt="Showcase image" src="https://raw.githubusercontent.com/CyN1ckal/CyNickal-Software-EFT/refs/heads/master/Images/EFT_1.0.2.0.png"/>
 
 # Current Features
