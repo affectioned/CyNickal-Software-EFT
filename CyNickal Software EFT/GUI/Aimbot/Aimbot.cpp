@@ -14,8 +14,9 @@ void Aimbot::RenderSettings()
 	ImGui::Begin("Aimbot Settings", &bSettings);
 	ImGui::Checkbox("Master Toggle", &bMasterToggle);
 	ImGui::Checkbox("Draw FOV Circle", &bDrawFOV);
-	ImGui::SliderFloat("Smooth X", &fSmoothX, 1.0f, 50.0f, "%.1f");
-	ImGui::SliderFloat("Smooth Y", &fSmoothY, 1.0f, 50.0f, "%.1f");
+	ImGui::SliderFloat("Alpha X", &fAlphaX, 0.01f, 1.0f, "%.2f");
+	ImGui::SliderFloat("Alpha Y", &fAlphaY, 0.01f, 1.0f, "%.2f");
+	ImGui::SliderFloat("Gaussian Noise", &fGaussianNoise, 0.0f, 5.0f, "%.2f");
 	ImGui::SliderFloat("FOV", &fPixelFOV, 1.0f, 300.0f);
 	ImGui::SliderFloat("Deadzone FOV", &fDeadzoneFov, 1.0f, 10.0f);
 
@@ -44,10 +45,6 @@ float Distance(Vector2 a, ImVec2 b)
 {
 	return sqrtf(powf(b.x - a.x, 2) + powf(b.y - a.y, 2));
 }
-float Distance(ImVec2 a, ImVec2 b)
-{
-	return sqrtf(powf(b.x - a.x, 2) + powf(b.y - a.y, 2));
-}
 
 void Aimbot::OnDMAFrame(DMA_Connection* Conn)
 {
@@ -58,37 +55,34 @@ void Aimbot::OnDMAFrame(DMA_Connection* Conn)
 	auto BestTarget = Aimbot::FindBestTarget();
 	auto& RegisteredPlayers = EFT::GetRegisteredPlayers();
 
+	auto LastTime = std::chrono::steady_clock::time_point();
+
 	do
 	{
-		auto frameStart = std::chrono::high_resolution_clock::now();
+		auto CurrentTime = std::chrono::high_resolution_clock::now();
+		auto DeltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(CurrentTime - LastTime).count();
+		if (DeltaTime < 5) continue;
+		LastTime = CurrentTime;
 
 		RegisteredPlayers.QuickUpdate(Conn);
 		CameraList::QuickUpdateNecessaryCameras(Conn);
 
 		auto Delta = GetAimDeltaToTarget(BestTarget);
-		static ImVec2 PreviousDelta{};
-		float fDistance = Distance(Delta, PreviousDelta);
 
-		if (fDistance < 2.0f)
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		if (Delta.x == 0.0f && Delta.y == 0.0f)
 			continue;
-		}
 
-		PreviousDelta = Delta;
+		// Lerp from no movement toward full delta — lower alpha = smoother
+		Vector2 MoveAmount{
+			std::lerp(0.0f, Delta.x, fAlphaX),
+			std::lerp(0.0f, Delta.y, fAlphaY)
+		};
 
-		float smoothX = std::max(1.0f, fSmoothX);
-		float smoothY = std::max(1.0f, fSmoothY);
-
-		Vector2 MoveAmount{ Delta.x / smoothX, Delta.y / smoothY };
+		std::normal_distribution<float> noise(0.0f, fGaussianNoise);
+		MoveAmount.x += noise(gen);
+		MoveAmount.y += noise(gen);
 
 		MyMakcu::m_Device.mouseMove(MoveAmount.x, MoveAmount.y);
-
-		// Limit to ~60 FPS to prevent jitter
-		auto frameEnd = std::chrono::high_resolution_clock::now();
-		auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(frameEnd - frameStart);
-		if (elapsed.count() < 16) // ~60 FPS
-			std::this_thread::sleep_for(std::chrono::milliseconds(16 - elapsed.count()));
 
 	} while (Keybinds::Aimbot.IsActive(Conn));
 }
