@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Database.h"
-#include "Network/Classes/CFileDownload/CFileDownload.hpp"
+#include "TarkovDevAPI.hpp"
 
 void Database::Initialize()
 {
@@ -8,6 +8,8 @@ void Database::Initialize()
 		std::println("[Database] EFT_Data.db not found on file!");
 		CreateLocalDB();
 	}
+
+	TarkovDevAPI::FetchAll(GetTarkovDB());
 }
 
 sqlite3* Database::GetTarkovDB()
@@ -95,5 +97,5 @@ void Database::CreateLocalDB()
 	}
 
 	sqlite3_close(db);
-	std::println("[Database] Database created successfully! (Schema only - data needs to be populated by Python script)");
+	std::println("[Database] Database created successfully!");
 }

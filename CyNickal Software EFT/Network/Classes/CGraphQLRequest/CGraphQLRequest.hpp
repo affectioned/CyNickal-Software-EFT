@@ -1,9 +1,9 @@
 #pragma once
 
-class CFileDownload
+class CGraphQLRequest
 {
 public:
-	CFileDownload(const std::string& URL);
+	CGraphQLRequest(const std::string& URL, const std::string& Query);
 	const std::string& GetResponse() const;
 
 private:
