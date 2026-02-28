@@ -78,8 +78,15 @@ void Database::CreateLocalDB()
 	)";
 
 	const char* createExfilIndex = R"(
-		CREATE INDEX IF NOT EXISTS idx_exfil_position 
+		CREATE INDEX IF NOT EXISTS idx_exfil_position
 		ON exfil_data(map_internal_name, pos_x, pos_y, pos_z)
+	)";
+
+	const char* createMetadataTable = R"(
+		CREATE TABLE IF NOT EXISTS metadata (
+			key TEXT PRIMARY KEY,
+			value TEXT NOT NULL
+		)
 	)";
 
 	char* errMsg = nullptr;
@@ -88,7 +95,8 @@ void Database::CreateLocalDB()
 		sqlite3_exec(db, createContainerTable, nullptr, nullptr, &errMsg) != SQLITE_OK ||
 		sqlite3_exec(db, createAmmoTable, nullptr, nullptr, &errMsg) != SQLITE_OK ||
 		sqlite3_exec(db, createExfilTable, nullptr, nullptr, &errMsg) != SQLITE_OK ||
-		sqlite3_exec(db, createExfilIndex, nullptr, nullptr, &errMsg) != SQLITE_OK) {
+		sqlite3_exec(db, createExfilIndex, nullptr, nullptr, &errMsg) != SQLITE_OK ||
+		sqlite3_exec(db, createMetadataTable, nullptr, nullptr, &errMsg) != SQLITE_OK) {
 
 		std::println("[Database] Failed to create tables: {}", errMsg);
 		sqlite3_free(errMsg);
