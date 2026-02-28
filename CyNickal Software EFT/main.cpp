@@ -5,10 +5,12 @@
 #include "DMA/DMA Thread.h"
 #include "Makcu/MyMakcu.h"
 #include "Database/Database.h"
+#include "Logger/Logger.h"
 
 std::atomic<bool> bRunning{ true };
 int main()
 {
+	Logger::Initialize();
 	std::println("Hello, EFT_DMA!");
 
 	Database::Initialize();
