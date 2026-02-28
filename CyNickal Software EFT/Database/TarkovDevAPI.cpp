@@ -1,4 +1,6 @@
 #include "pch.h"
+#include "sqlite3.h"
+#include "json.hpp"
 #include "TarkovDevAPI.hpp"
 #include "Network/Classes/CGraphQLRequest/CGraphQLRequest.hpp"
 
