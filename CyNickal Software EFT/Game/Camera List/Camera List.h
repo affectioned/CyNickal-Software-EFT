@@ -18,6 +18,7 @@ public:
 	static void SetOpticRadius(float Width);
 
 private:
+	static inline std::mutex m_CacheMutex{};
 	static inline std::vector<CCamera> m_CameraCache{};
 	static inline CCamera* m_pFPSCamera{ nullptr };
 	static inline std::vector<CCamera*> m_pOpticCameras{};
