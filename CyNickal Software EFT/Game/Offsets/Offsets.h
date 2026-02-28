@@ -38,18 +38,18 @@ namespace Offsets
 	};
 
 	/* namespace: EFT, class: GameWorld : UnityEngine::MonoBehaviour */
-	namespace CLocalGameWorld
+	namespace CGameWorld
 	{
-		inline constexpr std::ptrdiff_t pExfiltrationController{ 0x50 };
-		inline constexpr std::ptrdiff_t pMapName{ 0xC8 };
-		inline constexpr std::ptrdiff_t pLootList{ 0x190 };
-		inline constexpr std::ptrdiff_t pRegisteredPlayers{ 0x1B0 };
-		inline constexpr std::ptrdiff_t pMainPlayer{ 0x208 };
+		inline constexpr std::ptrdiff_t _ExfiltrationController_k__BackingField{ 0x50 };
+		inline constexpr std::ptrdiff_t _LocationId_k__BackingField{ 0xC8 };
+		inline constexpr std::ptrdiff_t LootList{ 0x190 };
+		inline constexpr std::ptrdiff_t RegisteredPlayers{ 0x1B0 };
+		inline constexpr std::ptrdiff_t MainPlayer{ 0x208 };
 	};
 
-	namespace CExfiltrationController
+	namespace CExfiltrationTimerSoundPlayer
 	{
-		inline constexpr std::ptrdiff_t pExfiltrationPoints{ 0x20 };
+		inline constexpr std::ptrdiff_t _exfiltrationPoint{ 0x20 };
 	};
 
 	namespace CGenericList
@@ -61,7 +61,7 @@ namespace Offsets
 	namespace CExfiltrationPoint
 	{
 		inline constexpr std::ptrdiff_t pUnknown{ 0x10 };
-		inline constexpr std::ptrdiff_t ExfilStatus{ 0x58 };
+		inline constexpr std::ptrdiff_t _status{ 0x58 };
 	}
 
 	namespace CComponents
@@ -75,65 +75,78 @@ namespace Offsets
 		inline constexpr std::ptrdiff_t NumPlayers{ 0x18 };
 		inline constexpr std::ptrdiff_t MaxPlayers{ 0x1C };
 	}
+
 	namespace CPlayer
 	{
-		inline constexpr std::ptrdiff_t pMovementContext{ 0x60 };
-		inline constexpr std::ptrdiff_t pPlayerBody{ 0x190 };
-		inline constexpr std::ptrdiff_t pProceduralWeaponAnimation{ 0x338 };
-		inline constexpr std::ptrdiff_t pProfile{ 0x900 };
-		inline constexpr std::ptrdiff_t pAiData{ 0x940 };
-		inline constexpr std::ptrdiff_t pHandsController{ 0x960 };
+		inline constexpr std::ptrdiff_t _MovementContext_k__BackingField{ 0x60 };
+		inline constexpr std::ptrdiff_t _playerBody{ 0x190 };
+		inline constexpr std::ptrdiff_t _ProceduralWeaponAnimation_k__BackingField{ 0x338 };
+		inline constexpr std::ptrdiff_t _Profile_k__BackingField{ 0x900 };
+		inline constexpr std::ptrdiff_t _AIData_k__BackingField{ 0x940 };
+		inline constexpr std::ptrdiff_t _handsController{ 0x980 };
+	
 	}
+
 	namespace CProceduralWeaponAnimation
 	{
-		inline constexpr std::ptrdiff_t pOptics{ 0x180 };
-		inline constexpr std::ptrdiff_t bAiming{ 0x145 };
+		inline constexpr std::ptrdiff_t _isAiming{ 0x145 };
+		inline constexpr std::ptrdiff_t _optics{ 0x180 };
 	}
-	namespace CObservedPlayer
+
+	namespace CObservedPlayerView 
 	{
-		inline constexpr std::ptrdiff_t pPlayerBody{ 0xD8 };
-		inline constexpr std::ptrdiff_t pPlayerController{ 0x28 };
-		inline constexpr std::ptrdiff_t IsAi{ 0xA0 };
-		inline constexpr std::ptrdiff_t PlayerSide{ 0x94 };
-		inline constexpr std::ptrdiff_t pVoice{ 0x40 };
-		inline constexpr std::ptrdiff_t pAiData{ 0x70 };
+		inline constexpr std::ptrdiff_t _ObservedPlayerController_k__BackingField{ 0x28 };
+		inline constexpr std::ptrdiff_t _Voice_k__BackingField{ 0x40 };
+		inline constexpr std::ptrdiff_t _AIData_k__BackingField{ 0x70 };
+		inline constexpr std::ptrdiff_t _Side_k__BackingField{ 0x94 };
+		inline constexpr std::ptrdiff_t _IsAI_k__BackingField{ 0xA0 };
+		inline constexpr std::ptrdiff_t _PlayerBody_k__BackingField{ 0xD8 };
 	}
+
 	namespace CPlayerController
 	{
 		inline constexpr std::ptrdiff_t pMovementController{ 0x30 };
 		inline constexpr std::ptrdiff_t pHands{ 0x30 };
 	}
+
 	namespace CMovementController
 	{
 		inline constexpr std::ptrdiff_t pObservedPlayerState{ 0x98 };
 	}
+
 	namespace CObservedMovementState
 	{
 		inline constexpr std::ptrdiff_t Rotation{ 0x20 };
 		inline constexpr std::ptrdiff_t pObservedPlayerHands{ 0x130 };
 	}
+
 	namespace CMovementContext
 	{
 		inline constexpr std::ptrdiff_t Rotation{ 0xC8 };
 	}
+
 	namespace CPlayerBody
 	{
 		inline constexpr std::ptrdiff_t pSkeleton{ 0x30 };
 	}
+
 	namespace CCameras
 	{
 		inline constexpr std::ptrdiff_t pCameraList{ 0x0 };
 		inline constexpr std::ptrdiff_t NumCameras{ 0x10 };
 	}
+
 	namespace CComponent
 	{
 		inline constexpr std::ptrdiff_t pObjectClass{ 0x20 };
 		inline constexpr std::ptrdiff_t pGameObject{ 0x58 };
 	}
+
 	namespace CCamera
 	{
 		inline constexpr std::ptrdiff_t pCameraInfo{ 0x18 };
 	}
+
 	namespace CCameraInfo
 	{
 		inline constexpr std::ptrdiff_t Zoom{ 0xE8 };
@@ -141,37 +154,45 @@ namespace Offsets
 		inline constexpr std::ptrdiff_t FOV{ 0x1A8 };
 		inline constexpr std::ptrdiff_t AspectRatio{ 0x518 };
 	}
+
 	namespace CSkeleton
 	{
 		inline constexpr std::ptrdiff_t pSkeletonValues{ 0x30 };
 	}
+
 	namespace CValues
 	{
 		inline constexpr std::ptrdiff_t pArr1{ 0x10 };
 	}
+
 	namespace CTransformHierarchy
 	{
 		inline constexpr std::ptrdiff_t pVertices{ 0x68 };
 		inline constexpr std::ptrdiff_t pIndices{ 0x40 };
 	}
+
 	namespace CObservedPlayerController
 	{
 		inline constexpr std::ptrdiff_t pMovementController{ 0xD8 };
 		inline constexpr std::ptrdiff_t pHealthController{ 0xE8 };
 	}
+
 	namespace CAIData
 	{
 		inline constexpr std::ptrdiff_t pBotOwner{ 0x28 };
 		inline constexpr std::ptrdiff_t bIsAi{ 0x100 };
 	}
+
 	namespace CProfile
 	{
 		inline constexpr std::ptrdiff_t pProfileInfo{ 0x48 };
 	}
+
 	namespace CProfileInfo
 	{
 		inline constexpr std::ptrdiff_t Side{ 0x48 };
 	}
+
 	namespace CBotOwner
 	{
 		inline constexpr std::ptrdiff_t pSpawnProfileData{ 0x3C8 };
@@ -209,28 +230,34 @@ namespace Offsets
 		inline constexpr std::ptrdiff_t Width{ 0x3C };
 		inline constexpr std::ptrdiff_t Height{ 0x40 };
 	}
+
 	namespace CSpawnProfileData
 	{
 		inline constexpr std::ptrdiff_t SpawnType{ 0x10 };
 	}
+
 	namespace CUnityTransform
 	{
 		inline constexpr std::ptrdiff_t pTransformHierarchy{ 0x70 };
 		inline constexpr std::ptrdiff_t Index{ 0x78 };
 	}
+
 	namespace CBoneArray
 	{
 		inline constexpr std::ptrdiff_t ArrayStart{ 0x20 };
 	}
+
 	namespace CSkeletonValues
 	{
 		inline constexpr std::ptrdiff_t pBoneArray{ 0x10 };
 	}
+
 	namespace CGameObject
 	{
 		inline constexpr std::ptrdiff_t pComponents{ 0x58 };
 		inline constexpr std::ptrdiff_t pName{ 0x88 };
 	}
+
 	namespace CHealthController
 	{
 		inline constexpr std::ptrdiff_t HealthStatus{ 0x10 };
@@ -241,6 +268,7 @@ namespace Offsets
 	{
 		inline constexpr std::ptrdiff_t pItem{ 0x70 };
 	}
+
 	/* namespace: EFT.NextObservedPlayer, class: ObservedPlayerHandsController : System::Object */
 	namespace CObservedPlayerHands
 	{

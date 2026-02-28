@@ -9,9 +9,9 @@ void CObservedPlayer::PrepareRead_1(VMMDLL_SCATTER_HANDLE vmsh)
 	if (IsInvalid())
 		return;
 
-	VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayer::pPlayerController, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_PlayerControllerAddress), nullptr);
-	VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayer::PlayerSide, sizeof(uint32_t), reinterpret_cast<BYTE*>(&m_Side), nullptr);
-	VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayer::pVoice, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_VoiceAddress), nullptr);
+	VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayerView::_ObservedPlayerController_k__BackingField, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_PlayerControllerAddress), nullptr);
+	VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayerView::_Side_k__BackingField, sizeof(uint32_t), reinterpret_cast<BYTE*>(&m_Side), nullptr);
+	VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayerView::_Voice_k__BackingField, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_VoiceAddress), nullptr);
 }
 
 void CObservedPlayer::PrepareRead_2(VMMDLL_SCATTER_HANDLE vmsh)

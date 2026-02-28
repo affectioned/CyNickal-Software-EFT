@@ -6,7 +6,7 @@
 
 CExfilPoint::CExfilPoint(uintptr_t ExfilPointAddress) : CBaseEntity(ExfilPointAddress)
 {
-	//std::println("[CExfilPoint] Constructed with {0:X}", m_EntityAddress);
+	std::println("[CExfilPoint] Constructed with {0:X}", m_EntityAddress);
 }
 
 void CExfilPoint::PrepareRead_1(VMMDLL_SCATTER_HANDLE vmsh)
@@ -14,7 +14,7 @@ void CExfilPoint::PrepareRead_1(VMMDLL_SCATTER_HANDLE vmsh)
 	if (IsInvalid())
 		return;
 
-	VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CExfiltrationPoint::ExfilStatus, sizeof(uint32_t), reinterpret_cast<BYTE*>(&m_Status), nullptr);
+	VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CExfiltrationPoint::_status, sizeof(uint32_t), reinterpret_cast<BYTE*>(&m_Status), nullptr);
 	VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CExfiltrationPoint::pUnknown, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_ComponentAddress), reinterpret_cast<DWORD*>(&m_BytesRead));
 }
 
