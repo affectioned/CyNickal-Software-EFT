@@ -55,15 +55,8 @@ void Aimbot::OnDMAFrame(DMA_Connection* Conn)
 	auto BestTarget = Aimbot::FindBestTarget();
 	auto& RegisteredPlayers = EFT::GetRegisteredPlayers();
 
-	auto LastTime = std::chrono::steady_clock::time_point();
-
 	do
 	{
-		auto CurrentTime = std::chrono::high_resolution_clock::now();
-		auto DeltaTime = std::chrono::duration_cast<std::chrono::milliseconds>(CurrentTime - LastTime).count();
-		if (DeltaTime < 5) continue;
-		LastTime = CurrentTime;
-
 		RegisteredPlayers.QuickUpdate(Conn);
 		CameraList::QuickUpdateNecessaryCameras(Conn);
 
