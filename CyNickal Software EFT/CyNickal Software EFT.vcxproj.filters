@@ -132,6 +132,9 @@
     <ClCompile Include="Database\Database.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Logger\Logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\Dependencies\sqlite\sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -354,6 +357,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Database\Database.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GUI\Keybinds\Keybinds.h">
