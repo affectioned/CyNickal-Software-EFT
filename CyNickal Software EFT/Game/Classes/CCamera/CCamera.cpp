@@ -86,7 +86,7 @@ void CCamera::Finalize()
 void CCamera::QuickFinalize()
 {
 	if (m_BytesRead != sizeof(Matrix44))
-		SetInvalid();
+		return; // skip this frame, keep last good values
 
 	SetViewMatrix(m_PrivateViewMatrix);
 	SetFOV(m_PrivateFOV);

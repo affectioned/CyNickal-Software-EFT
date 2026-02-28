@@ -111,8 +111,13 @@ bool CameraList::CreateCameraCache(DMA_Connection* Conn, uintptr_t CameraHeadAdd
 {
 	auto& Proc = EFT::GetProcess();
 
-	m_CameraCache.clear();
-	m_CameraCache.reserve(NumCameras);
+	{
+		std::scoped_lock lock(m_CacheMutex);
+		m_pFPSCamera = nullptr;
+		m_pOpticCameras.clear();
+		m_CameraCache.clear();
+		m_CameraCache.reserve(NumCameras);
+	}
 
 	std::println("[Camera] Creating camera cache with {} cameras from {:X}", NumCameras, CameraHeadAddress);
 	std::vector<uintptr_t> CameraAddresses = Proc.ReadVec<uintptr_t>(Conn, CameraHeadAddress, NumCameras);
@@ -128,12 +133,16 @@ bool CameraList::CreateCameraCache(DMA_Connection* Conn, uintptr_t CameraHeadAdd
 
 	std::println("[Camera] Cached {} cameras.", m_CameraCache.size());
 
-	if (auto FPSCam = SearchCameraCacheByName("FPS Camera"))
-		m_pFPSCamera = FPSCam;
-	else
-		std::println("[Camera] Failed to find FPS Camera in cache.");
+	{
+		std::scoped_lock lock(m_CacheMutex);
 
-	m_pOpticCameras = GetPotentialOpticCameras();
+		if (auto FPSCam = SearchCameraCacheByName("FPS Camera"))
+			m_pFPSCamera = FPSCam;
+		else
+			std::println("[Camera] Failed to find FPS Camera in cache.");
+
+		m_pOpticCameras = GetPotentialOpticCameras();
+	}
 
 	return true;
 }
@@ -207,6 +216,8 @@ CCamera* CameraList::FindWinningOptic(const std::vector<CCamera*>& PotentialOpti
 
 void CameraList::QuickUpdateNecessaryCameras(DMA_Connection* Conn)
 {
+	std::scoped_lock lock(m_CacheMutex);
+
 	auto vmsh = VMMDLL_Scatter_Initialize(Conn->GetHandle(), EFT::GetProcess().GetPID(), VMMDLL_FLAG_NOCACHE);
 
 	auto pSelectedOptic = GetSelectedOptic();
