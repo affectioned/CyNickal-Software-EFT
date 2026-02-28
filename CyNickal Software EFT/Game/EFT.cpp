@@ -30,22 +30,27 @@ const Process& EFT::GetProcess()
 
 void EFT::CreateWorldIfNeeded(DMA_Connection* Conn)
 {
-	try 
+	try
 	{
 		if (FleaBot::bMasterToggle) {
 			return;
 		}
 
-		if (pGameWorld && pGameWorld->IsValidRaid(Conn)) {
-			return;
+		{
+			std::shared_lock ReadLock(m_GameWorldMutex);
+			if (pGameWorld && pGameWorld->IsValidRaid(Conn))
+				return;
 		}
 
 		std::println("[EFT] Not in raid or invalid raid detected.");
 
+		// GOM scan is the slow part (3-5 seconds) — runs WITHOUT holding any lock
+		// so camera / player quick-updates continue unimpeded on the DMA loop thread
 		auto LatestWorldAddr = GOM::GetLatestWorldAddr(Conn);
 
 		{
-			std::scoped_lock Lock(m_GameWorldMutex);
+			// Exclusive lock only for the brief pointer swap
+			std::unique_lock WriteLock(m_GameWorldMutex);
 
 			pGameWorld.reset();
 

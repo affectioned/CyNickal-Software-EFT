@@ -23,7 +23,7 @@ public:
 	static void HandlePlayerAllocations(DMA_Connection* Conn);
 
 public:
-	static inline std::mutex m_GameWorldMutex{};
+	static inline std::shared_mutex m_GameWorldMutex{};
 	static inline std::unique_ptr<class CLocalGameWorld> pGameWorld{ nullptr };
 
 	static class CRegisteredPlayers& GetRegisteredPlayers();
