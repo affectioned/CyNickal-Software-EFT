@@ -102,13 +102,6 @@ namespace Offsets
 		inline constexpr std::ptrdiff_t _IsAI_k__BackingField{ 0xA0 };
 		inline constexpr std::ptrdiff_t _PlayerBody_k__BackingField{ 0xD8 };
 	}
-
-	namespace CPlayerController
-	{
-		inline constexpr std::ptrdiff_t pMovementController{ 0x30 };
-		inline constexpr std::ptrdiff_t pHands{ 0x30 };
-	}
-
 	namespace CMovementController
 	{
 		inline constexpr std::ptrdiff_t pObservedPlayerState{ 0x98 };
@@ -159,12 +152,6 @@ namespace Offsets
 	{
 		inline constexpr std::ptrdiff_t pSkeletonValues{ 0x30 };
 	}
-
-	namespace CValues
-	{
-		inline constexpr std::ptrdiff_t pArr1{ 0x10 };
-	}
-
 	namespace CTransformHierarchy
 	{
 		inline constexpr std::ptrdiff_t pVertices{ 0x68 };
