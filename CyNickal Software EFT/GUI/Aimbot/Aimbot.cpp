@@ -14,8 +14,8 @@ void Aimbot::RenderSettings()
 	ImGui::Begin("Aimbot Settings", &bSettings);
 	ImGui::Checkbox("Master Toggle", &bMasterToggle);
 	ImGui::Checkbox("Draw FOV Circle", &bDrawFOV);
-	ImGui::SliderFloat("Alpha X", &fAlphaX, 0.01f, 1.0f, "%.2f");
-	ImGui::SliderFloat("Alpha Y", &fAlphaY, 0.01f, 1.0f, "%.2f");
+	ImGui::SliderFloat("Alpha X", &fAlphaX, 0.001f, 1.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
+	ImGui::SliderFloat("Alpha Y", &fAlphaY, 0.001f, 1.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
 	ImGui::SliderFloat("Gaussian Noise", &fGaussianNoise, 0.0f, 5.0f, "%.2f");
 	ImGui::SliderFloat("FOV", &fPixelFOV, 1.0f, 300.0f);
 	ImGui::SliderFloat("Deadzone FOV", &fDeadzoneFov, 1.0f, 10.0f);
