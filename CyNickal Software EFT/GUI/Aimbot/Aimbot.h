@@ -1,5 +1,6 @@
 #pragma once
 #include "DMA/DMA.h"
+#include "Game/Classes/Vector.h"
 
 class Aimbot
 {
