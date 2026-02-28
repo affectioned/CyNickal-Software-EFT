@@ -318,12 +318,30 @@ void CRegisteredPlayers::AllocatePlayersFromVector(DMA_Connection* Conn, std::ve
 
 	ExecuteReadsOnPlayerVec(Conn, m_LocalCopy);
 
+	// Only keep players whose full read succeeded. Invalid ones are left out of
+	// both m_Players and the address cache so the next 5s scan retries them.
+	std::vector<uintptr_t> ValidAddresses;
+	std::vector<Player> ValidPlayers;
+	for (std::size_t i = 0; i < m_LocalCopy.size(); i++)
+	{
+		bool bInvalid = std::visit([](auto& p) { return p.IsInvalid(); }, m_LocalCopy[i]);
+		if (!bInvalid)
+		{
+			ValidAddresses.push_back(PlayerAddresses[i]);
+			ValidPlayers.push_back(std::move(m_LocalCopy[i]));
+		}
+		else
+		{
+			std::println("[PlayerList] Player at 0x{:X} failed initial read — will retry on next scan.", PlayerAddresses[i]);
+		}
+	}
+
 	std::scoped_lock Lock(m_Mut);
 	m_Players.insert(m_Players.end(),
-		std::make_move_iterator(m_LocalCopy.begin()),
-		std::make_move_iterator(m_LocalCopy.end()));
+		std::make_move_iterator(ValidPlayers.begin()),
+		std::make_move_iterator(ValidPlayers.end()));
 
-	AddPlayersToCache(PlayerAddresses, playerType);
+	AddPlayersToCache(ValidAddresses, playerType);
 }
 
 void CRegisteredPlayers::DeallocatePlayersFromVector(std::vector<uintptr_t> PlayerAddresses, EPlayerType playerType)

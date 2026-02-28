@@ -11,6 +11,9 @@ void CBaseEFTPlayer::PrepareRead_1(VMMDLL_SCATTER_HANDLE vmsh, EPlayerType playe
 	{
 		VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayerView::_PlayerBody_k__BackingField, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_PlayerBodyAddress), reinterpret_cast<DWORD*>(&m_BytesRead));
 		VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayerView::_AIData_k__BackingField, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_AIDataAddress), nullptr);
+		// Read IsAI directly from the backing field — more reliable than the AIData pointer chain
+		// which silently defaults to false if m_AIDataAddress is null, misclassifying AI scavs as PScavs
+		VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayerView::_IsAI_k__BackingField, sizeof(bool), reinterpret_cast<BYTE*>(&m_IsAi), nullptr);
 	}
 	else if (playerType == EPlayerType::eMainPlayer)
 	{
@@ -33,7 +36,6 @@ void CBaseEFTPlayer::PrepareRead_2(VMMDLL_SCATTER_HANDLE vmsh)
 
 	if (m_AIDataAddress)
 	{
-		VMMDLL_Scatter_PrepareEx(vmsh, m_AIDataAddress + Offsets::CAIData::bIsAi,sizeof(bool), reinterpret_cast<BYTE*>(&m_IsAi), nullptr);
 		VMMDLL_Scatter_PrepareEx(vmsh, m_AIDataAddress + Offsets::CAIData::pBotOwner, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_BotOwnerAddress), nullptr);
 	}
 }
