@@ -4,13 +4,47 @@
 #include "TarkovDevAPI.hpp"
 #include "Network/Classes/CGraphQLRequest/CGraphQLRequest.hpp"
 
+int64_t TarkovDevAPI::GetLastFetchTime(sqlite3* db)
+{
+	sqlite3_stmt* stmt = nullptr;
+	sqlite3_prepare_v2(db, "SELECT value FROM metadata WHERE key = 'last_fetched';", -1, &stmt, nullptr);
+	int64_t timestamp = 0;
+	if (sqlite3_step(stmt) == SQLITE_ROW)
+		timestamp = sqlite3_column_int64(stmt, 0);
+	sqlite3_finalize(stmt);
+	return timestamp;
+}
+
+void TarkovDevAPI::UpdateLastFetchTime(sqlite3* db)
+{
+	auto now = std::chrono::duration_cast<std::chrono::seconds>(
+		std::chrono::system_clock::now().time_since_epoch()).count();
+	sqlite3_stmt* stmt = nullptr;
+	sqlite3_prepare_v2(db,
+		"INSERT OR REPLACE INTO metadata (key, value) VALUES ('last_fetched', ?);",
+		-1, &stmt, nullptr);
+	sqlite3_bind_int64(stmt, 1, static_cast<sqlite3_int64>(now));
+	sqlite3_step(stmt);
+	sqlite3_finalize(stmt);
+}
+
 void TarkovDevAPI::FetchAll(sqlite3* db)
 {
+	auto now = std::chrono::duration_cast<std::chrono::seconds>(
+		std::chrono::system_clock::now().time_since_epoch()).count();
+
+	if (now - GetLastFetchTime(db) < FetchIntervalSeconds)
+	{
+		std::println("[TarkovDevAPI] Data is fresh, skipping fetch.");
+		return;
+	}
+
 	std::println("[TarkovDevAPI] Fetching latest data from tarkov.dev...");
 	FetchItems(db);
 	FetchContainers(db);
 	FetchAmmo(db);
 	FetchExfils(db);
+	UpdateLastFetchTime(db);
 	std::println("[TarkovDevAPI] Fetch complete.");
 }
 
