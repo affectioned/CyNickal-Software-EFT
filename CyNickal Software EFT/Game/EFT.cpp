@@ -32,10 +32,6 @@ void EFT::CreateWorldIfNeeded(DMA_Connection* Conn)
 {
 	try 
 	{
-		if (FleaBot::bMasterToggle) {
-			return;
-		}
-
 		if (pGameWorld && pGameWorld->IsValidRaid(Conn)) {
 			return;
 		}
