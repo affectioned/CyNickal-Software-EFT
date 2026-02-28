@@ -13,7 +13,6 @@ std::filesystem::path Logger::GetLogPath()
 
 void Logger::Initialize()
 {
-	// Mirror Config::getConfigDir() — Documents\EFT-DMA\Configs\ (or .\Configs\ fallback)
 	char docPath[MAX_PATH]{};
 	std::filesystem::path logDir;
 	if (SUCCEEDED(SHGetFolderPathA(nullptr, CSIDL_PERSONAL, nullptr, 0, docPath)))
