@@ -44,7 +44,7 @@ void CExfilController::Initialize(DMA_Connection* Conn)
 {
 	auto& Proc = EFT::GetProcess();
 
-	uintptr_t ExfilList = Proc.ReadMem<uintptr_t>(Conn, m_EntityAddress + Offsets::CExfiltrationController::pExfiltrationPoints);
+	uintptr_t ExfilList = Proc.ReadMem<uintptr_t>(Conn, m_EntityAddress + Offsets::CExfiltrationTimerSoundPlayer::_exfiltrationPoint);
 
 	if (!ExfilList)
 	{

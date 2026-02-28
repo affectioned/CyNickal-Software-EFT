@@ -1,4 +1,6 @@
 #include "pch.h"
+#include "sqlite3.h"
+#include "json.hpp"
 #include "CGraphQLRequest.hpp"
 #include "Network/Callbacks/Callbacks.hpp"
 

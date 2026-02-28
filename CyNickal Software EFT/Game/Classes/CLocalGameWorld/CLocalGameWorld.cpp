@@ -11,17 +11,17 @@ CLocalGameWorld::CLocalGameWorld(uintptr_t GameWorldAddress) : CBaseEntity(GameW
 	auto Conn = DMA_Connection::GetInstance();
 	auto& Proc = EFT::GetProcess();
 
-	LootListAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CLocalGameWorld::pLootList);
+	LootListAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CGameWorld::LootList);
 	m_pLootList = std::make_unique<CLootList>(LootListAddress);
 
-	RegisteredPlayersAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CLocalGameWorld::pRegisteredPlayers);
+	RegisteredPlayersAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CGameWorld::RegisteredPlayers);
 	m_pRegisteredPlayers = std::make_unique<CRegisteredPlayers>(RegisteredPlayersAddress);
 
-	ExfiltrationControllerAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CLocalGameWorld::pExfiltrationController);
-	MapNameAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CLocalGameWorld::pMapName);
+	ExfiltrationControllerAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CGameWorld::_ExfiltrationController_k__BackingField);
+	MapNameAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CGameWorld::_LocationId_k__BackingField);
 	m_pExfilController = std::make_unique<CExfilController>(ExfiltrationControllerAddress, MapNameAddress);
 
-	m_MainPlayerAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CLocalGameWorld::pMainPlayer);
+	m_MainPlayerAddress = Proc.ReadMem<uintptr_t>(Conn, GameWorldAddress + Offsets::CGameWorld::MainPlayer);
 }
 
 void CLocalGameWorld::QuickUpdatePlayers(DMA_Connection* Conn)

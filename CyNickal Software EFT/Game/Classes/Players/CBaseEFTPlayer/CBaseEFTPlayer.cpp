@@ -9,13 +9,13 @@ void CBaseEFTPlayer::PrepareRead_1(VMMDLL_SCATTER_HANDLE vmsh, EPlayerType playe
 
 	if (playerType == EPlayerType::eObservedPlayer)
 	{
-		VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayer::pPlayerBody, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_PlayerBodyAddress), reinterpret_cast<DWORD*>(&m_BytesRead));
-		VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayer::pAiData, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_AIDataAddress), nullptr);
+		VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayerView::_PlayerBody_k__BackingField, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_PlayerBodyAddress), reinterpret_cast<DWORD*>(&m_BytesRead));
+		VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CObservedPlayerView::_AIData_k__BackingField, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_AIDataAddress), nullptr);
 	}
 	else if (playerType == EPlayerType::eMainPlayer)
 	{
-		VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CPlayer::pPlayerBody, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_PlayerBodyAddress), reinterpret_cast<DWORD*>(&m_BytesRead));
-		VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CPlayer::pAiData, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_AIDataAddress), nullptr);
+		VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CPlayer::_playerBody, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_PlayerBodyAddress), reinterpret_cast<DWORD*>(&m_BytesRead));
+		VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CPlayer::_AIData_k__BackingField, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_AIDataAddress), nullptr);
 	}
 }
 
