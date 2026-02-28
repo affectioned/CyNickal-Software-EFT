@@ -12,10 +12,14 @@ public:
 	static inline bool bSettings{ false };
 	static inline bool bMasterToggle{ false };
 	static inline bool bDrawFOV{ true };
-	static inline float fSmoothX{ 10.0f };
-	static inline float fSmoothY{ 10.0f };
+	static inline float fAlphaX{ 0.1f };
+	static inline float fAlphaY{ 0.1f };
+	static inline float fGaussianNoise{ 0.5f };
 	static inline float fPixelFOV{ 75.0f };
 	static inline float fDeadzoneFov{ 2.0f };
+
+private:
+	static inline std::mt19937 gen{ std::random_device{}() };
 
 private:
 	static ImVec2 GetAimDeltaToTarget(uintptr_t TargetAddress);
