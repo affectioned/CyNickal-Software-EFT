@@ -15,11 +15,14 @@ public:
 	static inline float fAlphaX{ 0.03f };
 	static inline float fAlphaY{ 0.03f };
 	static inline float fGaussianNoise{ 0.5f };
+	static inline float fPrediction{ 1.0f };
 	static inline float fPixelFOV{ 75.0f };
 	static inline float fDeadzoneFov{ 2.0f };
 
 private:
 	static inline std::mt19937 gen{ std::random_device{}() };
+	static inline Vector2 m_LastScreenPos{};
+	static inline uintptr_t m_LastTargetAddress{ 0 };
 
 private:
 	static ImVec2 GetAimDeltaToTarget(uintptr_t TargetAddress);

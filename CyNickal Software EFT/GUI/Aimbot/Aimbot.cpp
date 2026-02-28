@@ -17,6 +17,7 @@ void Aimbot::RenderSettings()
 	ImGui::SliderFloat("Alpha X", &fAlphaX, 0.001f, 1.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
 	ImGui::SliderFloat("Alpha Y", &fAlphaY, 0.001f, 1.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
 	ImGui::SliderFloat("Gaussian Noise", &fGaussianNoise, 0.0f, 5.0f, "%.2f");
+	ImGui::SliderFloat("Prediction", &fPrediction, 0.0f, 5.0f, "%.1f");
 	ImGui::SliderFloat("FOV", &fPixelFOV, 1.0f, 300.0f);
 	ImGui::SliderFloat("Deadzone FOV", &fDeadzoneFov, 1.0f, 10.0f);
 
@@ -106,7 +107,19 @@ ImVec2 Aimbot::GetAimDeltaToTarget(uintptr_t TargetAddress)
 
 	if (DistanceFromCenter > fPixelFOV) return Return;
 
-	Return = Subtract(ScreenPos, CenterScreen);
+	// Extrapolate screen position to compensate for lerp lag on moving targets.
+	// On target switch, skip prediction for one frame to avoid a jump.
+	Vector2 PredictedPos = ScreenPos;
+	if (fPrediction > 0.0f && TargetAddress == m_LastTargetAddress)
+	{
+		PredictedPos.x += (ScreenPos.x - m_LastScreenPos.x) * fPrediction;
+		PredictedPos.y += (ScreenPos.y - m_LastScreenPos.y) * fPrediction;
+	}
+
+	m_LastScreenPos = ScreenPos;
+	m_LastTargetAddress = TargetAddress;
+
+	Return = Subtract(PredictedPos, CenterScreen);
 
 	return Return;
 }
