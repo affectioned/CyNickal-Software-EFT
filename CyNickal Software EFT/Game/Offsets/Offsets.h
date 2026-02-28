@@ -102,25 +102,26 @@ namespace Offsets
 		inline constexpr std::ptrdiff_t _IsAI_k__BackingField{ 0xA0 };
 		inline constexpr std::ptrdiff_t _PlayerBody_k__BackingField{ 0xD8 };
 	}
-	namespace CMovementController
+
+	namespace CObservedPlayerMovementController 
 	{
-		inline constexpr std::ptrdiff_t pObservedPlayerState{ 0x98 };
+		inline constexpr std::ptrdiff_t _ObservedPlayerStateContext_k__BackingField{ 0x98 };
 	}
 
-	namespace CObservedMovementState
+	namespace CObservedPlayerStateContext
 	{
-		inline constexpr std::ptrdiff_t Rotation{ 0x20 };
-		inline constexpr std::ptrdiff_t pObservedPlayerHands{ 0x130 };
+		inline constexpr std::ptrdiff_t _Rotation_k__BackingField{ 0x20 };
+		inline constexpr std::ptrdiff_t _observedPlayerHandsController{ 0x130 };
 	}
 
 	namespace CMovementContext
 	{
-		inline constexpr std::ptrdiff_t Rotation{ 0xC8 };
+		inline constexpr std::ptrdiff_t _rotation{ 0xC8 };
 	}
 
 	namespace CPlayerBody
 	{
-		inline constexpr std::ptrdiff_t pSkeleton{ 0x30 };
+		inline constexpr std::ptrdiff_t SkeletonRootJoint{ 0x30 };
 	}
 
 	namespace CCameras
@@ -152,6 +153,7 @@ namespace Offsets
 	{
 		inline constexpr std::ptrdiff_t pSkeletonValues{ 0x30 };
 	}
+
 	namespace CTransformHierarchy
 	{
 		inline constexpr std::ptrdiff_t pVertices{ 0x68 };

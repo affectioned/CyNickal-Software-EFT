@@ -33,7 +33,7 @@ void CObservedPlayer::PrepareRead_3(VMMDLL_SCATTER_HANDLE vmsh)
 	if (IsInvalid())
 		return;
 
-	VMMDLL_Scatter_PrepareEx(vmsh, m_MovementControllerAddress + Offsets::CMovementController::pObservedPlayerState, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_ObservedMovementStateAddress), nullptr);
+	VMMDLL_Scatter_PrepareEx(vmsh, m_MovementControllerAddress + Offsets::CObservedPlayerMovementController::_ObservedPlayerStateContext_k__BackingField, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_ObservedMovementStateAddress), nullptr);
 	VMMDLL_Scatter_PrepareEx(vmsh, m_HealthControllerAddress + Offsets::CHealthController::HealthStatus, sizeof(uint32_t), reinterpret_cast<BYTE*>(&m_TagStatus), nullptr);
 }
 
@@ -44,8 +44,8 @@ void CObservedPlayer::PrepareRead_4(VMMDLL_SCATTER_HANDLE vmsh)
 	if (IsInvalid())
 		return;
 
-	VMMDLL_Scatter_PrepareEx(vmsh, m_ObservedMovementStateAddress + Offsets::CObservedMovementState::Rotation, sizeof(float), reinterpret_cast<BYTE*>(&m_Yaw), nullptr);
-	VMMDLL_Scatter_PrepareEx(vmsh, m_ObservedMovementStateAddress + Offsets::CObservedMovementState::pObservedPlayerHands, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_ObservedHandsControllerAddress), nullptr);
+	VMMDLL_Scatter_PrepareEx(vmsh, m_ObservedMovementStateAddress + Offsets::CObservedPlayerStateContext::_Rotation_k__BackingField, sizeof(float), reinterpret_cast<BYTE*>(&m_Yaw), nullptr);
+	VMMDLL_Scatter_PrepareEx(vmsh, m_ObservedMovementStateAddress + Offsets::CObservedPlayerStateContext::_observedPlayerHandsController, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_ObservedHandsControllerAddress), nullptr);
 }
 
 void CObservedPlayer::PrepareRead_5(VMMDLL_SCATTER_HANDLE vmsh)
@@ -167,7 +167,7 @@ void CObservedPlayer::QuickRead(VMMDLL_SCATTER_HANDLE vmsh)
 		m_pHands->QuickRead(vmsh, EPlayerType::eObservedPlayer);
 
 	VMMDLL_Scatter_PrepareEx(vmsh, m_HealthControllerAddress + Offsets::CHealthController::HealthStatus, sizeof(uint32_t), reinterpret_cast<BYTE*>(&m_TagStatus), nullptr);
-	VMMDLL_Scatter_PrepareEx(vmsh, m_ObservedMovementStateAddress + Offsets::CObservedMovementState::Rotation, sizeof(float), reinterpret_cast<BYTE*>(&m_Yaw), nullptr);
+	VMMDLL_Scatter_PrepareEx(vmsh, m_ObservedMovementStateAddress + Offsets::CObservedPlayerStateContext::_Rotation_k__BackingField, sizeof(float), reinterpret_cast<BYTE*>(&m_Yaw), nullptr);
 }
 
 void CObservedPlayer::QuickFinalize()

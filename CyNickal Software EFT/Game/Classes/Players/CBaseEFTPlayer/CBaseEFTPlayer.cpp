@@ -29,7 +29,7 @@ void CBaseEFTPlayer::PrepareRead_2(VMMDLL_SCATTER_HANDLE vmsh)
 
 	if (IsInvalid()) return;
 
-	VMMDLL_Scatter_PrepareEx(vmsh, m_PlayerBodyAddress + Offsets::CPlayerBody::pSkeleton, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_SkeletonRootAddress), reinterpret_cast<DWORD*>(&m_BytesRead));
+	VMMDLL_Scatter_PrepareEx(vmsh, m_PlayerBodyAddress + Offsets::CPlayerBody::SkeletonRootJoint, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_SkeletonRootAddress), reinterpret_cast<DWORD*>(&m_BytesRead));
 
 	if (m_AIDataAddress)
 	{

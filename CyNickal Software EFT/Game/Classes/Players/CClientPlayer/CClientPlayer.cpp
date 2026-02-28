@@ -32,7 +32,7 @@ void CClientPlayer::PrepareRead_2(VMMDLL_SCATTER_HANDLE vmsh)
 	m_pHands->PrepareRead_1(vmsh, EPlayerType::eMainPlayer);
 
 	VMMDLL_Scatter_PrepareEx(vmsh, m_ProfileAddress + Offsets::CProfile::pProfileInfo, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_ProfileInfoAddress), nullptr);
-	VMMDLL_Scatter_PrepareEx(vmsh, m_MovementContextAddress + Offsets::CMovementContext::Rotation, sizeof(float), reinterpret_cast<BYTE*>(&m_Yaw), nullptr);
+	VMMDLL_Scatter_PrepareEx(vmsh, m_MovementContextAddress + Offsets::CMovementContext::_rotation, sizeof(float), reinterpret_cast<BYTE*>(&m_Yaw), nullptr);
 	VMMDLL_Scatter_PrepareEx(vmsh, m_ProceduralWeaponAnimationAddress + Offsets::CProceduralWeaponAnimation::_optics, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_OpticsAddress), nullptr);
 	VMMDLL_Scatter_PrepareEx(vmsh, m_ProceduralWeaponAnimationAddress + Offsets::CProceduralWeaponAnimation::_isAiming, sizeof(std::byte), reinterpret_cast<BYTE*>(&m_AimingByte), nullptr);
 }
@@ -150,7 +150,7 @@ void CClientPlayer::QuickRead(VMMDLL_SCATTER_HANDLE vmsh)
 	if(m_pHands)
 		m_pHands->QuickRead(vmsh, EPlayerType::eMainPlayer);
 
-	VMMDLL_Scatter_PrepareEx(vmsh, m_MovementContextAddress + Offsets::CMovementContext::Rotation, sizeof(float), reinterpret_cast<BYTE*>(&m_Yaw), nullptr);
+	VMMDLL_Scatter_PrepareEx(vmsh, m_MovementContextAddress + Offsets::CMovementContext::_rotation, sizeof(float), reinterpret_cast<BYTE*>(&m_Yaw), nullptr);
 	VMMDLL_Scatter_PrepareEx(vmsh, m_EntityAddress + Offsets::CPlayer::_handsController, sizeof(uintptr_t), reinterpret_cast<BYTE*>(&m_HandsControllerAddress), nullptr);
 	VMMDLL_Scatter_PrepareEx(vmsh, m_ProceduralWeaponAnimationAddress + Offsets::CProceduralWeaponAnimation::_isAiming, sizeof(std::byte), reinterpret_cast<BYTE*>(&m_AimingByte), nullptr);
 }
