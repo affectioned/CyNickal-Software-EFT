@@ -8,7 +8,6 @@
 #include "GUI/Radar/Radar.h"
 #include "GUI/Aimbot/Aimbot.h"
 #include "GUI/Keybinds/Keybinds.h"
-#include "GUI/Flea Bot/Flea Bot.h"
 #include "Game/EFT.h"
 
 void MainMenu::Render()
@@ -31,7 +30,6 @@ void MainMenu::Render()
 	ImGui::Checkbox("Fuser Settings", &Fuser::bSettings);
 	ImGui::Checkbox("Radar Setting", &Radar::bSettings);
 	ImGui::Checkbox("Aimbot Settings", &Aimbot::bSettings);
-	ImGui::Checkbox("Flea Bot Settings", &FleaBot::bSettings);
 	ImGui::Spacing();
 
 	ImGui::SeparatorText("Configuration");

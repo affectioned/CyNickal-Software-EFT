@@ -2,7 +2,6 @@
 #include "DMA Thread.h"
 #include "Input Manager.h"
 #include "Game/EFT.h"
-#include "Game/Response Data/Response Data.h"
 
 #include "Game/GOM/GOM.h"
 #include "Game/Camera List/Camera List.h"
@@ -33,10 +32,6 @@ void DMA_Thread_Main()
 		EFT::CreateWorldIfNeeded(Conn);
 		});
 
-	CTimer ResponseData(std::chrono::milliseconds(25), [&Conn]() {
-		ResponseData::OnDMAFrame(Conn);
-		});
-
 	CTimer Player_Quick(std::chrono::milliseconds(25), [&Conn]() {
 		if (EFT::pGameWorld) EFT::QuickUpdatePlayers(Conn);
 		});
@@ -53,7 +48,6 @@ void DMA_Thread_Main()
 		auto TimeNow = std::chrono::high_resolution_clock::now();
 		LightRefresh.Tick(TimeNow);
 		RaidCheck.Tick(TimeNow);
-		ResponseData.Tick(TimeNow);
 		Player_Quick.Tick(TimeNow);
 		Player_Allocations.Tick(TimeNow);
 		Camera_UpdateViewMatrix.Tick(TimeNow);

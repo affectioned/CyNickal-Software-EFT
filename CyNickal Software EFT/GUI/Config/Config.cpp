@@ -13,7 +13,6 @@
 #include "GUI/Fuser/Draw/Exfils.h"
 #include "GUI/Keybinds/Keybinds.h"
 #include "GUI/Main Menu/Main Menu.h"
-#include "GUI/Flea Bot/Flea Bot.h"
 
 #include <shlobj.h>
 #include <fstream>
@@ -173,10 +172,6 @@ json Config::SerializeConfig() {
 		{"bVSync", MainMenu::bVSync}
 	};
 
-	j["FleaBot"] = {
-		{"bSettings", FleaBot::bSettings}
-	};
-
 	j["Aimbot"] = {
 		{"bSettings", Aimbot::bSettings},
 		{"bMasterToggle", Aimbot::bMasterToggle},
@@ -279,14 +274,6 @@ void Config::DeserializeConfig(const json& j) {
 
 		if (mainMenuTable.contains("bVSync")) {
 			MainMenu::bVSync = mainMenuTable["bVSync"].get<bool>();
-		}
-	}
-
-	if (j.contains("FleaBot")) {
-		const auto& fleaBotTable = j["FleaBot"];
-
-		if (fleaBotTable.contains("bSettings")) {
-			FleaBot::bSettings = fleaBotTable["bSettings"].get<bool>();
 		}
 	}
 

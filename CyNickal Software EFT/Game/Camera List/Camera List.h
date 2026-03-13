@@ -9,19 +9,19 @@ public:
 	static bool Initialize(DMA_Connection* Conn);
 	static bool W2S(const Vector3 WorldPosition, Vector2& ScreenPosition);
 	static bool OpticW2S(const Vector3 WorldPosition, Vector2& ScreenPosition);
-	static CCamera* GetSelectedOptic();
+	static CCamera* GetActiveOptic();
+	static bool IsScoped();
 
 	static void QuickUpdateNecessaryCameras(DMA_Connection* Conn);
-	static inline uint32_t m_OpticIndex{ 0 };
 	static float GetOpticRadius();
 	static Vector2 GetOpticCenter();
-	static void SetOpticRadius(float Width);
 
 private:
 	static inline std::mutex m_CacheMutex{};
 	static inline std::vector<CCamera> m_CameraCache{};
 	static inline CCamera* m_pFPSCamera{ nullptr };
 	static inline std::vector<CCamera*> m_pOpticCameras{};
+	static inline CCamera* m_pActiveOpticCamera{ nullptr };
 
 private:
 	static bool WorldToScreenEx(const Vector3 WorldPosition, Vector2& ScreenPosition, CCamera* FPSCamera, CCamera* OpticCamera = nullptr);

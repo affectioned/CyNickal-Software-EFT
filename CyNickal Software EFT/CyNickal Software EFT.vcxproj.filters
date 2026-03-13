@@ -183,12 +183,6 @@
     <ClCompile Include="Game\Classes\CExfilController\CExfilController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Response Data\Response Data.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\Flea Bot\Flea Bot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Makcu\MyMakcu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -202,6 +196,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game\Offsets\Offsets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Database\TarkovDevAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\Classes\CGraphQLRequest\CGraphQLRequest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -413,12 +413,6 @@
     <ClInclude Include="Game\Classes\CExfilController\CExfilController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Response Data\Response Data.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\Flea Bot\Flea Bot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Makcu\MyMakcu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -429,6 +423,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DMA\Signature Scanner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Database\TarkovDevAPI.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\Classes\CGraphQLRequest\CGraphQLRequest.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

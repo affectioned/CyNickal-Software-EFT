@@ -86,51 +86,6 @@ namespace Offsets
 		return Cameras != 0;
 	}
 
-
-	// il2cpp : 00000001807370F5 48 8D 0D FC 91 0D 05                                lea     rcx, qword_1858102F8
-	// il2cpp : 00000001807370FC E8 0F 0E B9 FF                                      call    sub_1802C7F10
-	// il2cpp : 0000000180737101 C6 05 C2 17 24 05 01                                mov     cs : byte_1859788CA, 1
-	// il2cpp : 0000000180737108
-	// il2cpp : 0000000180737108                                     loc_180737108 : ; CODE XREF : sub_180737090 + 63↑j
-	// il2cpp : 0000000180737108 48 85 DB                                            test    rbx, rbx
-	// il2cpp : 000000018073710B 75 0A                                               jnz     short loc_180737117
-	// il2cpp : 000000018073710D 33 C9 xor ecx, ecx
-	// il2cpp : 000000018073710F E8 FC 3C 63 03                                      call    sub_183D6AE10
-	// il2cpp : 0000000180737114 48 8B F8                                            mov     rdi, rax
-	bool ResolveLibObject(DMA_Connection* Conn)
-	{
-		auto& proc = EFT::GetProcess();
-		auto pid = proc.GetPID();
-
-		uintptr_t base = proc.GetAssemblyAddress();
-		size_t    size = proc.GetAssemblySize();
-
-		if (!base || !size)
-			return false;
-
-		uintptr_t libObjectPtr = SignatureScanner::FindSignature(
-			Conn,
-			"48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8B 4C 24 ? C6 05 ? ? ? ? ? 45 32 FF",
-			base,
-			base + size,
-			pid
-		);
-
-		uintptr_t readAddr = libObjectPtr + 3;
-
-		int relative = proc.ReadMem<int>(Conn, readAddr);
-
-		uintptr_t LibObject = libObjectPtr + 7 + relative;
-
-		uintptr_t LibObjectRVA = LibObject - base;
-
-		Offsets::ZLibObject = LibObjectRVA;
-
-		std::println("[+] LibObject RVA Offset: 0x{:X}", Offsets::ZLibObject);
-
-		return LibObject != 0;
-	}
-
 	bool ResolveOffsets(DMA_Connection* Conn)
 	{
 		if (!ResolveGOM(Conn))
@@ -138,9 +93,6 @@ namespace Offsets
 
 		if (!ResolveCameras(Conn))
 			throw std::runtime_error("Failed to resolve Cameras");
-
-		if (!ResolveLibObject(Conn))
-			throw std::runtime_error("Failed to resolve LibObject");
 
 		std::println("All offsets are resolved");
 

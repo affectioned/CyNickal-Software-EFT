@@ -12,7 +12,6 @@
 #include "GUI/Color Picker/Color Picker.h"
 #include "GUI/Keybinds/Keybinds.h"
 #include "GUI/Config/Config.h"
-#include "GUI/Flea Bot/Flea Bot.h"
 
 void Render(ImGuiContext* ctx)
 {
@@ -36,7 +35,6 @@ void Render(ImGuiContext* ctx)
 	Keybinds::Render();
 	MainMenu::Render();
 	Config::Render();
-	FleaBot::Render();
 
 	ImGui::PopFont();
 }

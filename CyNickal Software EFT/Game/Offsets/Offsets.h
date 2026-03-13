@@ -18,16 +18,7 @@ namespace Offsets
 	//48 8B 05 ? ? ? ? 48 8B 38 48 8B 3C 3E
 	//48 8B 05 ? ? ? ? 49 C7 C6 ? ? ? ? 8B 48 ? 85 C9 0F 84 ? ? ? ? 48 89 B4 24
 	//48 8B 05 ? ? ? ? 49 C7 C6 ? ? ? ? 8B 48 ? 85 C9 0F 84 ? ? ? ? 48 89 9C 24
-	inline std::ptrdiff_t pCameras{ 0x19F3080 };
-
-	// GameAssembly.dll
-	// 48 8B 0D ? ? ? ? 8B F0 48 8B 91 ? ? ? ? 48 8B 4A
-	// 48 8B 05 ? ? ? ? BA ? ? ? ? 4C 8B 0D ? ? ? ? 41 B8
-	// 48 8B 05 ? ? ? ? 48 8B 80 ? ? ? ? 48 89 6C 24 ? 4C 8B 30
-	// 48 8B 0D ? ? ? ? 48 8B 89 ? ? ? ? 48 89 6C 24 ? 4C 8B 31
-	// 48 8B 0D ? ? ? ? 48 8B F8 48 8B 91 ? ? ? ? 48 8B 0A 48 85 C9 74
-	// 48 8D 0D ? ? ? ? E8 ? ? ? ? C6 05 ? ? ? ? ? 48 85 DB 75 ? 33 C9 E8 ? ? ? ? 48 8B F8
-	inline std::ptrdiff_t ZLibObject{ 0x58102F8 };
+	inline std::ptrdiff_t pCameras{ 0x19F3080 };;
 
 	bool ResolveOffsets(DMA_Connection* Conn);
 
@@ -40,11 +31,11 @@ namespace Offsets
 	/* namespace: EFT, class: GameWorld : UnityEngine::MonoBehaviour */
 	namespace CGameWorld
 	{
-		inline constexpr std::ptrdiff_t _ExfiltrationController_k__BackingField{ 0x50 };
-		inline constexpr std::ptrdiff_t _LocationId_k__BackingField{ 0xC8 };
-		inline constexpr std::ptrdiff_t LootList{ 0x190 };
-		inline constexpr std::ptrdiff_t RegisteredPlayers{ 0x1B0 };
-		inline constexpr std::ptrdiff_t MainPlayer{ 0x208 };
+		inline constexpr std::ptrdiff_t _ExfiltrationController_k__BackingField{ 0x58 };
+		inline constexpr std::ptrdiff_t _LocationId_k__BackingField{ 0xD0 };
+		inline constexpr std::ptrdiff_t LootList{ 0x198 };
+		inline constexpr std::ptrdiff_t RegisteredPlayers{ 0x1B8 };
+		inline constexpr std::ptrdiff_t MainPlayer{ 0x210 };
 	};
 
 	namespace CExfiltrationTimerSoundPlayer

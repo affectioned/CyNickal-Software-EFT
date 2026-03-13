@@ -3,7 +3,6 @@
 #include "DMA/Input Manager.h"
 #include "GUI/Aimbot/Aimbot.h"
 #include "Game/EFT.h"
-#include "GUI/Flea Bot/Flea Bot.h"
 #include "GUI/Fuser/Draw/Players.h"
 
 const char* CKeybind::GetKeyName(uint32_t vkCode)
@@ -169,9 +168,6 @@ void Keybinds::OnDMAFrame(DMA_Connection* Conn)
 
 	if (Aimbot.IsActive(Conn))
 		Aimbot::OnDMAFrame(Conn);
-
-	if (FleaBot.IsActive(Conn))
-		FleaBot::bMasterToggle = !FleaBot::bMasterToggle;
 
 	if(OpticESP.IsActive(Conn))
 		DrawESPPlayers::bOpticESP = !DrawESPPlayers::bOpticESP;

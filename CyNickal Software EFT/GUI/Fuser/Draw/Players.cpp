@@ -83,7 +83,7 @@ void DrawESPPlayers::DrawAll(const ImVec2& WindowPos, ImDrawList* DrawList)
 	auto LocalPlayer = PlayerList.GetLocalPlayer();
 	if (LocalPlayer == nullptr || LocalPlayer->IsInvalid()) return;
 
-	auto bDrawOpticESP = LocalPlayer->IsAiming() && bOpticESP;
+	auto bDrawOpticESP = LocalPlayer->IsAiming() && CameraList::IsScoped() && bOpticESP;
 	auto WindowSize = ImGui::GetWindowSize();
 	auto OpticFOV = CameraList::GetOpticRadius();
 

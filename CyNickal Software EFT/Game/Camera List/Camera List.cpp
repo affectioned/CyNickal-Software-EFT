@@ -92,19 +92,20 @@ bool CameraList::W2S(const Vector3 WorldPosition, Vector2& ScreenPosition)
 
 bool CameraList::OpticW2S(const Vector3 WorldPosition, Vector2& ScreenPosition)
 {
-	auto OpticCamera = GetSelectedOptic();
-	if (OpticCamera == nullptr || m_pFPSCamera == nullptr)
+	if (m_pActiveOpticCamera == nullptr || m_pFPSCamera == nullptr)
 		return false;
 
-	return WorldToScreenEx(WorldPosition, ScreenPosition, m_pFPSCamera, OpticCamera);
+	return WorldToScreenEx(WorldPosition, ScreenPosition, m_pFPSCamera, m_pActiveOpticCamera);
 }
 
-CCamera* CameraList::GetSelectedOptic()
+CCamera* CameraList::GetActiveOptic()
 {
-	if (m_OpticIndex < m_pOpticCameras.size())
-		return m_pOpticCameras[m_OpticIndex];
+	return m_pActiveOpticCamera;
+}
 
-	return nullptr;
+bool CameraList::IsScoped()
+{
+	return m_pActiveOpticCamera != nullptr;
 }
 
 bool CameraList::CreateCameraCache(DMA_Connection* Conn, uintptr_t CameraHeadAddress, uint32_t NumCameras)
@@ -220,13 +221,11 @@ void CameraList::QuickUpdateNecessaryCameras(DMA_Connection* Conn)
 
 	auto vmsh = VMMDLL_Scatter_Initialize(Conn->GetHandle(), EFT::GetProcess().GetPID(), VMMDLL_FLAG_NOCACHE);
 
-	auto pSelectedOptic = GetSelectedOptic();
-
 	if (m_pFPSCamera)
 		m_pFPSCamera->QuickRead(vmsh);
 
-	if (pSelectedOptic)
-		pSelectedOptic->QuickRead(vmsh);
+	for (auto pOpticCam : m_pOpticCameras)
+		if (pOpticCam) pOpticCam->QuickRead(vmsh);
 
 	VMMDLL_Scatter_Execute(vmsh);
 	VMMDLL_Scatter_CloseHandle(vmsh);
@@ -234,22 +233,31 @@ void CameraList::QuickUpdateNecessaryCameras(DMA_Connection* Conn)
 	if (m_pFPSCamera)
 		m_pFPSCamera->QuickFinalize();
 
-	if (pSelectedOptic)
-		pSelectedOptic->QuickFinalize();
+	for (auto pOpticCam : m_pOpticCameras)
+		if (pOpticCam) pOpticCam->QuickFinalize();
+
+	m_pActiveOpticCamera = FindWinningOptic(m_pOpticCameras);
 }
 
-/*
-	This is temporary and should be replaced with the optic's true width and center
-*/
-static float fOpticRadius{ 300.0f };
 float CameraList::GetOpticRadius()
 {
-	return fOpticRadius;
+	if (m_pActiveOpticCamera && m_pFPSCamera)
+	{
+		float opticFOV = m_pActiveOpticCamera->GetFOV();
+		float fpsFOV = m_pFPSCamera->GetFOV();
+
+		if (opticFOV > 1.0f && fpsFOV > 1.0f)
+		{
+			auto WindowSize = ImGui::GetWindowSize();
+			float opticTan = std::tan(opticFOV * static_cast<float>(std::numbers::pi) / 360.0f);
+			float fpsTan = std::tan(fpsFOV * static_cast<float>(std::numbers::pi) / 360.0f);
+			return (WindowSize.y * 0.5f) * opticTan / fpsTan;
+		}
+	}
+
+	return 300.0f;
 }
-void CameraList::SetOpticRadius(float Width)
-{
-	fOpticRadius = Width;
-}
+
 Vector2 CameraList::GetOpticCenter()
 {
 	auto WindowSize = ImGui::GetWindowSize();

@@ -2,8 +2,6 @@
 #include "EFT.h"
 #include "Game/GOM/GOM.h"
 #include "Game/Camera List/Camera List.h"
-#include "Game/Response Data/Response Data.h"
-#include "GUI/Flea Bot/Flea Bot.h"
 #include "Offsets/Offsets.h"
 
 bool EFT::Initialize(DMA_Connection* Conn)
@@ -17,8 +15,6 @@ bool EFT::Initialize(DMA_Connection* Conn)
 	CreateWorldIfNeeded(Conn);
 
 	CameraList::Initialize(Conn);
-
-	ResponseData::Initialize(Conn);
 
 	return true;
 }
